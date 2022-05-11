@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "incremental": true,
+    "lib": ["ES2021"],
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noImplicitAny": true,
@@ -21,7 +22,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "target": "ES5",
+    "target": "ES5"
   },
   "exclude": [
     ".yarn/*",

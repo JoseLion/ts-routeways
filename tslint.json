@@ -9,8 +9,6 @@
     "eofline": true,
     "indent": [true, "spaces", 2],
     "interface-name": false,
-    "jsx-no-multiline-js": false,
-    "jsx-space-before-trailing-slash": true,
     "max-line-length": [true, 120],
     "no-console": true,
     "no-duplicate-imports": true,
@@ -40,7 +38,14 @@
     ],
     "trailing-comma": [true, {
       "singleline": "never",
-      "multiline": "always"
+      "multiline": {
+        "arrays": "always",
+        "objects": "always",
+        "functions": "always",
+        "imports": "always",
+        "exports": "always",
+        "typeLiterals": "always"
+      }
     }],
     "variable-name": [true, "allow-pascal-case", "allow-leading-underscore"]
   },
