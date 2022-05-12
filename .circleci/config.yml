@@ -11,7 +11,7 @@ commands:
 
     steps:
       - checkout:
-          path: ~/repos
+          path: ~/repos/ts-routeways
 
       - run:
           name: Install NodeJS
@@ -35,7 +35,7 @@ commands:
 
       - save_cache:
           paths:
-            - ~/repo/ts-routeways/.yarn/cache
+            - ~/repos/ts-routeways/.yarn/cache
           key: yarn-v1-{{ checksum "yarn.lock" }}
 
 jobs:
