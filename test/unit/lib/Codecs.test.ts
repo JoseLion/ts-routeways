@@ -1,7 +1,7 @@
 import dedent from "@cometlib/dedent";
 import { expect } from "iko";
 
-import { Codecs } from "../../../src/lib/Codecs";
+import { addCodec, Codec, Codecs } from "../../../src/lib/Codecs";
 import { CodecDecodeError } from "../../../src/lib/errors/CodecDecodeError";
 import { CodecEncodeError } from "../../../src/lib/errors/CodecEncodeError";
 
@@ -597,6 +597,22 @@ describe("[Unit] Codecs.test.ts", () => {
           expect(error.message).toBe('Unable to encode "foo". A boolean value was expected');
         });
       });
+    });
+  });
+
+  describe(".addCodec", () => {
+    it("adds the codec with it's name to the Codec object", () => {
+      const codec: Codec<"foo"> = {
+        decode: _text => "foo",
+        encode: _value => "foo",
+      };
+      const makeFoo = (_arg1: number, _arg2: boolean) => codec;
+
+      addCodec("Foo", codec);
+      addCodec("makeFoo", makeFoo);
+
+      expect((Codecs as any).Foo).toBe(codec);
+      expect((Codecs as any).makeFoo).toBe(makeFoo);
     });
   });
 });
