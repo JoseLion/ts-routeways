@@ -5,6 +5,13 @@ export { type PathLike } from "./lib/commons.types";
 export { type Codec, type CodecsType, Codecs, addCodec } from "./lib/Codecs";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
+export {
+  makeGotToHook,
+  makeNavigatorHook,
+  makePathVarsHook,
+  makeQueryParamHook,
+  makeRouteParamsHook,
+} from "./lib/react/hookMakers";
 
 /**
  * Creates a `Routeways` builder instance. Use this instance to start defining
