@@ -289,6 +289,18 @@ export const Codecs: Readonly<CodecsType> = {
   },
 };
 
+/**
+ * Extends the {@link Codecs} object to and custom codecs to it. This is just a
+ * convenience to have all codecs in one place and avoid rexporting an extended
+ * Codecs object.
+ *
+ * @param name the name of the new codec
+ * @param codec a codec or a function that returns a codec
+ */
+export function addCodec<T>(name: string, codec: Codec<T> | ((...args: any[]) => Codec<T>)): void {
+  Object.defineProperty(Codecs, name, { value: codec });
+}
+
 function isValidDate(date: Date): boolean {
   return !isNaN(date.getTime());
 }
