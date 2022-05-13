@@ -2,6 +2,7 @@ import dedent from "@cometlib/dedent";
 
 import { CodecDecodeError } from "./errors/CodecDecodeError";
 import { CodecEncodeError } from "./errors/CodecEncodeError";
+import { isValidDate } from "./helpers/commons";
 
 export interface Codec<T> {
   /**
@@ -299,8 +300,4 @@ export const Codecs: Readonly<CodecsType> = {
  */
 export function addCodec<T>(name: string, codec: Codec<T> | ((...args: any[]) => Codec<T>)): void {
   Object.defineProperty(Codecs, name, { value: codec });
-}
-
-function isValidDate(date: Date): boolean {
-  return !isNaN(date.getTime());
 }

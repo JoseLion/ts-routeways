@@ -7,6 +7,7 @@ import {
   RouteParams,
 } from "./commons.types";
 import { UrlParserError } from "./errors/UrlParserError";
+import { mapValues, safeKeys } from "./helpers/commons";
 
 type PathVarsCapture<P extends PathLike> =
   P extends `${string}/:${infer P1}/${string}:${infer P2}`
@@ -295,16 +296,4 @@ function injectParentData<
         template: () => fullPath,
       };
     }, { } as R);
-}
-
-function safeKeys<K extends keyof any>(obj: Record<K, unknown>): Array<K> {
-  return Object.keys(obj) as Array<K>;
-}
-
-function mapValues<T extends object>(obj: T, mapper: <K extends keyof T>(value: T[K], key: K) => T[K]): T {
-  return safeKeys(obj)
-    .reduce((acc, key) => ({
-      ...acc,
-      [key]: mapper(obj[key], key),
-    }), obj);
 }
