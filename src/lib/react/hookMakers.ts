@@ -66,66 +66,32 @@ type NavigatorHook<T extends Record<string, Routeway>> =
 type GotToHook = <S extends Routeway>(route: S, options?: NavigateOptions) =>
   (...params: Parameters<S["makeUrl"]>) => () => void;
 
-export function makeRouteParamsHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): RouteParamsHook {
-  return route => {
-    const navigateFn = getNavigate();
-    const { hash, pathname, search } = getLocation();
+/**
+ * Creates a hook that expects a `Routeways` route and returns a "goTo"
+ * function. I.e. a function that can be used as a callback, or event handler.
+ *
+ * @param getNavigate a function or hook that provideds a navigation function
+ * @returns a hook top create callback-like "goTo" functions of a route
+ */
+export function makeGotToHook(getNavigate: () => NavigateFn): GotToHook {
+  return (route, options) => {
+    const navigate = getNavigate();
 
-    const [queryParams, setQueryParams] = useState(() => route.parseUrl(pathname.concat(hash, search)).queryParams);
-
-    const pathVars = useMemo(() => {
-      const url = route.parseUrl(pathname.concat(hash, search));
-
-      return url.pathVars;
-    }, []);
-
-    useEffect(() => {
-      const url = route.makeUrl({ ...pathVars, ...queryParams });
-
-      navigateFn(url);
-    }, [queryParams]);
-
-    return {
-      pathVars,
-      queryParams,
-      setQueryParams,
+    return (...params) => () => {
+      const url = route.makeUrl(...params);
+      navigate(url, options);
     };
   };
 }
 
-export function makePathVarsHook(getLocation: () => LocationLike): PathVarsHook {
-  return route => {
-    const { hash, pathname, search } = getLocation();
-
-    return useMemo(() => {
-      const { pathVars } = route.parseUrl(pathname.concat(hash, search));
-
-      return pathVars;
-    }, []);
-  };
-}
-
-export function makeQueryParamHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): QueryParamHook {
-  return (route, key) => {
-    const navigateFn = getNavigate();
-    const { hash, pathname, search } = getLocation();
-
-    const [queryParam, setQueryParam] = useState(() => route.parseUrl(pathname.concat(hash, search)).queryParams[key]);
-
-    useEffect(() => {
-      const { pathVars, queryParams } = route.parseUrl(pathname.concat(hash, search));
-
-      navigateFn(route.makeUrl({
-        ...pathVars,
-        ...queryParams,
-        [key]: queryParam,
-      }));
-    }, [queryParam]);
-
-    return [queryParam, setQueryParam];
-  };
-}
-
+/**
+ * Creates a hook that returns a "Navigator" of your custom routes. This
+ * provides a more natural experience when imperative navigation is required.
+ *
+ * @param routes the custom `Routeways` routes
+ * @param getNavigate a function or hook that provideds a navigation function
+ * @returns a navigation hook of the custom `Routeways` routes
+ */
 export function makeNavigatorHook<T extends Record<string, Routeway>>(
   routes: T,
   getNavigate: () => NavigateFn,
@@ -164,13 +130,97 @@ export function makeNavigatorHook<T extends Record<string, Routeway>>(
   };
 }
 
-export function makeGotToHook(getNavigate: () => NavigateFn): GotToHook {
-  return (route, options) => {
-    const navigate = getNavigate();
+/**
+ * Creates a hook that expects a `Routeways` route and returns an object with
+ * its path variables parsed from the current location.
+ *
+ * @param getLocation a function or hook that provides a location-like object
+ * @returns a hook to consume the path variables of a route
+ */
+export function makePathVarsHook(getLocation: () => LocationLike): PathVarsHook {
+  return route => {
+    const { hash, pathname, search } = getLocation();
 
-    return (...params) => () => {
-      const url = route.makeUrl(...params);
-      navigate(url, options);
+    return useMemo(() => {
+      const { pathVars } = route.parseUrl(pathname.concat(hash, search));
+
+      return pathVars;
+    }, []);
+  };
+}
+
+/**
+ * Creates a hook that expects a `Routeways` route and the key of one of the
+ * possible query parameters of that route. It returns then a React state of
+ * that query parameter. Whenever the state of the parameter is changed, a
+ * navigation is executed to change the query parameter in the source too.
+ *
+ * @param getLocation a function or hook that provides a location-like object
+ * @param getNavigate a function or hook that provideds a navigation function
+ * @returns a hook to manage a query parameter of a route
+ */
+export function makeQueryParamHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): QueryParamHook {
+  return (route, key) => {
+    const navigateFn = getNavigate();
+    const { hash, pathname, search } = getLocation();
+
+    const [queryParam, setQueryParam] = useState(() => route.parseUrl(pathname.concat(hash, search)).queryParams[key]);
+
+    useEffect(() => {
+      const { pathVars, queryParams } = route.parseUrl(pathname.concat(hash, search));
+
+      navigateFn(route.makeUrl({
+        ...pathVars,
+        ...queryParams,
+        [key]: queryParam,
+      }));
+    }, [queryParam]);
+
+    return [queryParam, setQueryParam];
+  };
+}
+
+/**
+ * Creates a hook that expects a `Routeways` route and returns an object with
+ * all the path variables and query paramaters as states. That is to say, it
+ * returns a `pathVars` state object along with its `setPathVars` function; as
+ * well as a `queryParams` state object and its `setQueryParams` function.
+ *
+ * **Note:** This hook should be used on concrete complex situations where
+ * using all parameters as a single state is required. Keep in mind that a
+ * change on a single query parameter, for example, will cause a rerender on
+ * anything using the other query parameters. A `setPathVars` is not provided
+ * though because it's not very common to change a path variable and expect to
+ * stay in the same view, something should change so it's better to use a
+ * navigator in this specific scenarion.
+ *
+ * @param getLocation a function or hook that provides a location-like object
+ * @param getNavigate a function or hook that provideds a navigation function
+ * @returns a hook to manage all path variables and query parameters of a route
+ */
+export function makeRouteParamsHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): RouteParamsHook {
+  return route => {
+    const navigateFn = getNavigate();
+    const { hash, pathname, search } = getLocation();
+
+    const [queryParams, setQueryParams] = useState(() => route.parseUrl(pathname.concat(hash, search)).queryParams);
+
+    const pathVars = useMemo(() => {
+      const url = route.parseUrl(pathname.concat(hash, search));
+
+      return url.pathVars;
+    }, []);
+
+    useEffect(() => {
+      const url = route.makeUrl({ ...pathVars, ...queryParams });
+
+      navigateFn(url);
+    }, [queryParams]);
+
+    return {
+      pathVars,
+      queryParams,
+      setQueryParams,
     };
   };
 }

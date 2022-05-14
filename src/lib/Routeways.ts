@@ -25,8 +25,24 @@ type PathVars<P extends PathLike> =
 
 type MakeUrl<V extends ParamsConfig, Q extends ParamsConfig> =
   keyof V extends never
-    ? { makeUrl(params?: RouteParams<V, Q>): string; }
-    : { makeUrl(params: RouteParams<V, Q>): string; };
+    ? {
+        /**
+         * Creates a raw string URL for the route using the provided parameters.
+         *
+         * @param params the parameters used to build the route
+         * @returns the built URL of the route
+         */
+        makeUrl(params?: RouteParams<V, Q>): string;
+      }
+    : {
+        /**
+         * Creates a raw string URL for the route using the provided parameters.
+         *
+         * @param params the parameters used to build the route
+         * @returns the built URL of the route
+         */
+        makeUrl(params: RouteParams<V, Q>): string;
+      };
 
 export type Routeway<
   P extends PathLike = PathLike,
@@ -34,16 +50,50 @@ export type Routeway<
   Q extends ParamsConfig = { },
   S extends Record<string, Routeway> = { },
 > = MakeUrl<V, Q> & {
+  /**
+   * Convenience method that returns the configuration of the route.
+   *
+   * @returns an object with all the configuration of the route
+   */
   $config(): {
+    /**
+     * A record of the path variables configuration. The key refers to the name
+     * of the path variable and the value is the specific codec for the variable.
+     */
     pathVars: V;
+    /**
+     * A record of the query parameters configuration. The key refers to the
+     * name of the query parameters and the value is the specific codec for the
+     * parameter.
+     */
     queryParams: Q;
+    /**
+     * The template of this route segment. Differently from the `.template()`
+     * method, this property does not contain the template of the full path,
+     * but only of the specific route.
+     */
     segment: P;
+    /**
+     * A record of the nested `Routeway` instances of the route (if any).
+     */
     subRoutes: S;
   };
+  /**
+   * Parse a raw URL to get the path variables and query parameters from it.
+   *
+   * @param uri the raw URL to parse the params from
+   * @returns an object with the parsed path variables and query parameters
+   */
   parseUrl(uri: string): {
     pathVars: CodecToPathVars<V>;
     queryParams: CodecToQueryParams<Q>;
   };
+  /**
+   * Creates the complete template of the route. Useful when working with other
+   * routing libraries that need the context of the path with its variables.
+   *
+   * @returns the route template
+   */
   template(): string;
 } & S;
 
@@ -190,7 +240,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
   }
 
   /**
-   * Builds the routes defined by the API and returns an `Routeways` instance
+   * Builds the routes defined by the API and returns a `Routeways` instance
    * shaped by the names of the paths.
    *
    * @returns the built `Routeways` instance
