@@ -1,12 +1,17 @@
 {
   "name": "ts-routeways",
   "version": "0.0.0",
-  "description": "A type-safe solution to define and consume routes",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "description": "Lightweight and type-safe! All-in-one solution to define and consume routes",
   "repository": "git@github.com:JoseLion/ts-routeways.git",
   "author": "Jose Luis Leon <joseluis5000l@gmail.com>",
   "license": "MIT",
+  "private": "false",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist/src/**/*",
+    "src/**/*"
+  ],
   "scripts": {
     "check": "yarn compile && yarn lint && yarn test --forbid-only",
     "compile": "tsc",
@@ -42,5 +47,8 @@
     "react@": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
