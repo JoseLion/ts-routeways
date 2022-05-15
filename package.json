@@ -5,7 +5,6 @@
   "repository": "git@github.com:JoseLion/ts-routeways.git",
   "author": "Jose Luis Leon <joseluis5000l@gmail.com>",
   "license": "MIT",
-  "private": "false",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "files": [
@@ -41,10 +40,10 @@
     "iko@^0.6.0": "patch:iko@npm:0.6.0#.yarn/patches/iko-npm-0.6.0-c81ab722d7.patch"
   },
   "peerDependencies": {
-    "react@": ">=16.8.0"
+    "react": ">=16.8.0"
   },
   "peerDependenciesMeta": {
-    "react@": {
+    "react": {
       "optional": true
     }
   },
