@@ -58,7 +58,27 @@ jobs:
           name: Test
           command: yarn test --forbid-only
 
+  release:
+    working_directory: ~/repos/ts-routeways
+    executor: basic
+
+    steps:
+      - run:
+          name: Compile
+          command: yarn compile
+
+      - run:
+          name: Release
+          command: yarn release
+
 workflows:
   main:
     jobs:
       - build
+
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              only: release

@@ -11,6 +11,7 @@
     "check": "yarn compile && yarn lint && yarn test --forbid-only",
     "compile": "tsc",
     "lint": "tslint -c tslint.json \"!(dist)/**/*.ts?(x)\"",
+    "release": "semantic-release",
     "test": "cross-env NODE_ENV=test TS_NODE_TRANSPILE_ONLY=true mocha \"test/**/*.test.ts?(x)\""
   },
   "packageManager": "yarn@3.2.0",
@@ -22,6 +23,7 @@
     "iko": "^0.6.0",
     "mocha": "^10.0.0",
     "react": "^18.1.0",
+    "semantic-release": "^19.0.2",
     "ts-node": "^10.7.0",
     "tslib": "^2.4.0",
     "tslint": "^6.1.3",
