@@ -18,11 +18,11 @@ Some features of `ts-routeways` include:
 
 🍰 Simple API. Allows nesting and spliting into multiple files (useful on bigger apps).
 
-⚙️ Codec bases. Parameters are define with codecs imagination is the limit.
-> We provide with the most commmon codecs in on single `Codecs` object, which can be extended to add custom codecs of your own.
+⚙️ Codec based. Parameters are defined with codecs imagination is the limit.
+> We provide the most commmon codecs in on single `Codecs` object, which can be extended to add custom codecs of your own.
 
 🔧 Fully agnostic. You can use it with any framework/library, the concepts apply to any web-like router.
-> We provide with optional hook makers for React, just as a convenience. We're open to add more helpers for other libraries if necessary. PRs and suggestions are always welcome!
+> We provide optional hook makers for React, just as a convenience. We're open to add more helpers for other libraries if necessary. PRs and suggestions are always welcome!
 
 ## Install
 
@@ -40,7 +40,7 @@ yarn add ts-routeways
 
 ## Usage
 
-The concept simple, use the builder to create a `Routeways` instance that contain your custom routes. Then use that instance to access your routes in the same structured way you define them. For each route can make a raw string URL, or parse a URL to consume the parameters on it.
+The concept is simple, use the builder to create a `Routeways` instance that contains your custom routes. Then use that instance to access your routes in the same structured way you define them. Each route can make a raw string URL, or parse a URL to consume the parameters on it.
 
 ```ts
 import { Codecs, Routeways } from "ts-routeways";
@@ -67,7 +67,7 @@ export const MainRoutes = Routeways()
 > <br/>
 > **(5)** Finally, build an instance of your own `Routeways` to use it.
 
-With your `Routeways` defined, you can use them like in the examples bellow:
+With your `Routeways` defined, you can use them like in the examples below:
 
 ```ts
 import { MainRoutes } from "./MainRoutes";
@@ -80,12 +80,18 @@ MainRoutes.users.search.makeUrl(); // -> /users/search (query params are always 
 MainRoutes.users.search.makeUrl({ byName: "foo", showAll: true }); // -> /users/search?byName=foo&showAll=true
 
 const {
-  userId, // 3 (number)
+  pathVars: {
+    userId, // 3 (number)
+  },
 } = MainRoutes.users.view.parseUrl("/users/view/3");
 
 const {
-  byName, // john (string)
-  showAll, // false (boolean)
+  pathVars: {
+    byName, // john (string)
+  },
+  queryParams: {
+    showAll, // false (boolean)
+  },
 } = MainRoutes.users.search.parseUrl("/users/search?byName=john&showAll=false")
 
 // #template: useful for 3rd party routing libraries
@@ -97,10 +103,10 @@ MainRoutes.users.view.template(); // -> /users/view/:userId
 
 In `ts-routeways` a codec is just an object that defines a decoder and an encoder. These are generic functions, where `T` is the type of the codec:
 
-- **Decoder:** A function that receives a raw `string` value and transform it into a `T` value.
+- **Decoder:** A function that receives a raw `string` value and transforms it into a `T` value.
 - **Encoder:** A function that receives a `T` value and transforms it into a raw `string` value.
 
-Let's assume you want to use an awesome UUID library that has it's own types, and you want to use those UUIDs in your routes. Here's how you'd add the your custom codec:
+Let's assume you want to use an awesome UUID library that has its own types, and you want to use those UUIDs in your routes. Here's how you'd add your custom codec:
 
 ```ts
 // In your application entry point, or before building/exporting your `Routeways` instance(s)
@@ -132,7 +138,7 @@ addCodec("UUID", UUIDCodec);
 
 > 🚨 **Important:** Be sure to run the `addCodec(..)` function before you define (or export a definition) of your custom `Routeways`. Otherwise, your definition will not have your custom codecs at the moment of building and you'll get runtime errors.
 
-Now you just need to extends the type definition. Create the file `./typings/ts-routes.d.ts` and add the following:
+Now you just need to extend the type definition. Create the file `./typings/ts-routes.d.ts` and add the following:
 
 ```ts
 import { UUID } from "my-awesome-uuid-lib";
@@ -159,12 +165,12 @@ The entry point to the API would be the `Routeways()` function. This is a conven
 function Routeways(): RoutewaysBuilder;
 ```
 
-Then, the `RoutewaysBuilder` instance provide with the following methods: 
+Then, the `RoutewaysBuilder` instance provides the following methods: 
 
 | Method | Description |
 | ------ | ----------- |
 | `.path(config: PathConfig): RoutewaysBuilder` | Create a single path on the route under construction. Single paths do not allow nesting and can be considered the latest point of a branch in the router. Returns the same builder instance to continue the route definition. |
-| `.nest(config: NestConfig): RoutewaysBuilder` | Create a path on the route under construction that allows creating nested routes under it. Returns the same builder instance to continue the route definition. |
+| `.nest(config: NestConfig): RoutewaysBuilder` | Create a path on the route under construction that allows creation of nested routes under it. Returns the same builder instance to continue the route definition. |
 | `.build(): Record<string, Routeway>` | Builds the routes defined by the API and returns a `Routeways` instance shaped by the names of the paths. |
 
 Keep in mind that both `PathConfig` and `NestConfig` are complex, generic, conditional types. For the sake of the API reference, here's a simplified version of their type definition:
@@ -191,11 +197,11 @@ Once you have a `Routeways` instance, these are the methods available on each of
 | Method | Description |
 | ------ | ----------- |
 | `.$config(): RouteConfig` | Convenience method that returns the configuration of the route. See the section below for details on the `RouteConfig` object. |
-| `.makeUrl(params: RouteParams): string` | Creates a raw string URL for the route using the provided parameters. Keep in mind that `params` is not always required, depends on the route, if it had path variables or not.
+| `.makeUrl(params: RouteParams): string` | Creates a raw string URL for the route using the provided parameters. Keep in mind that `params` is not always required, depending on the route, if it had path variables or not.
 | `.parseUrl(uri: string): { pathVars: PathVars; queryParams: QueryParams; }` | Parse a raw URL to get the path variables and query parameters from it. |
 | `.template(): string` | Creates the complete template of the route. Useful when working with other routing libraries that need the context of the path with its variables. |
 
-Finally, the `RouteConfig` object reprensents the configuration of the route and has the following properties:
+Finally, the `RouteConfig` object represents the configuration of the route and has the following properties:
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
