@@ -315,7 +315,7 @@ function injectParentData<
           if (pathnameChunks.length === templateChunks.length && allChuncksMatch) {
             return {
               pathVars: mapValues(allPathVars, (codec, key) => {
-                const templateIndex = templateChunks.indexOf(`:${key}`);
+                const templateIndex = templateChunks.indexOf(`:${String(key)}`);
                 const pathVar = pathnameChunks[templateIndex]!;
 
                 return codec.decode(pathVar);
