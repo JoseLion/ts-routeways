@@ -5,16 +5,16 @@
   "repository": "git@github.com:JoseLion/ts-routeways.git",
   "author": "Jose Luis Leon <joseluis5000l@gmail.com>",
   "license": "MIT",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "dist/src/**/*",
-    "src/**/*"
+    "dist/"
   ],
   "scripts": {
+    "build": "tsc -p tsconfig.prod.json",
     "check": "yarn compile && yarn lint && yarn test --forbid-only",
-    "compile": "tsc",
-    "lint": "tslint -c tslint.json \"!(dist)/**/*.ts?(x)\"",
+    "compile": "tsc -p tsconfig.json",
+    "lint": "tslint -c tslint.json \"!(build|dist)/**/*.ts?(x)\"",
     "release": "semantic-release",
     "test": "cross-env NODE_ENV=test TS_NODE_TRANSPILE_ONLY=true mocha \"test/**/*.test.ts?(x)\""
   },

@@ -66,8 +66,8 @@ jobs:
       - bootstrap
 
       - run:
-          name: Compile
-          command: yarn compile
+          name: Build
+          command: yarn build
 
       - run:
           name: Release
