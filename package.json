@@ -20,11 +20,11 @@
   },
   "packageManager": "yarn@3.2.1",
   "devDependencies": {
+    "@stackbuilders/assertive-ts": "^1.1.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.0.3",
     "@types/react": "^18.0.15",
     "cross-env": "^7.0.3",
-    "iko": "^0.6.0",
     "mocha": "^10.0.0",
     "react": "^18.2.0",
     "semantic-release": "^19.0.3",
