@@ -1,5 +1,6 @@
 import dedent from "@cometlib/dedent";
-import { expect } from "iko";
+import { expect } from "@stackbuilders/assertive-ts";
+import { TypeFactories } from "@stackbuilders/assertive-ts/dist/lib/helpers/TypeFactories";
 
 import { addCodec, Codec, Codecs } from "../../../src/lib/Codecs";
 import { CodecDecodeError } from "../../../src/lib/errors/CodecDecodeError";
@@ -28,7 +29,7 @@ describe("[Unit] Codecs.test.ts", () => {
           it(`[${text}] returns its boolean value`, () => {
             const decoded = Codecs.Boolean.decode(text);
 
-            expect(decoded).toBe(bool);
+            expect(decoded).toBeEqual(bool);
           });
         });
       });
@@ -38,7 +39,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.Boolean.decode("some"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Boolean values must be "true" or "false". Got "some" instead');
+          expect(error.message).toBeEqual('Boolean values must be "true" or "false". Got "some" instead');
         });
       });
     });
@@ -49,7 +50,7 @@ describe("[Unit] Codecs.test.ts", () => {
           it(`[${bool}] returns its string representation`, () => {
             const encoded = Codecs.Boolean.encode(bool);
 
-            expect(encoded).toBe(str);
+            expect(encoded).toBeEqual(str);
           });
         }));
       });
@@ -59,7 +60,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.Boolean.encode("some" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "some". A boolean value was expected');
+          expect(error.message).toBeEqual('Unable to encode "some". A boolean value was expected');
         });
       });
     });
@@ -88,7 +89,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.Date.decode("foo"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Date values must have a ISO or RFC2822 format. Got "foo" instead');
+          expect(error.message).toBeEqual('Date values must have a ISO or RFC2822 format. Got "foo" instead');
         });
       });
     });
@@ -98,7 +99,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns its UTC string representation", () => {
           const encoded = Codecs.Date.encode(new Date("2022-04-05T18:30:15.150-05:00"));
 
-          expect(encoded).toBe("2022-04-05T23:30:15.150Z");
+          expect(encoded).toBeEqual("2022-04-05T23:30:15.150Z");
         });
       });
 
@@ -107,7 +108,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.Date.encode("some" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "some". A Date instance was expected');
+          expect(error.message).toBeEqual('Unable to encode "some". A Date instance was expected');
         });
       });
     });
@@ -129,7 +130,7 @@ describe("[Unit] Codecs.test.ts", () => {
           it(`[${variant}] returns its number value`, () => {
             const decoded = Codecs.Number.decode(text);
 
-            expect(decoded).toBe(num);
+            expect(decoded).toBeEqual(num);
           });
         });
       });
@@ -145,7 +146,7 @@ describe("[Unit] Codecs.test.ts", () => {
             const error = captureError(() => Codecs.Number.decode(text));
 
             expect(error).toBeInstanceOf(CodecDecodeError);
-            expect(error.message).toBe(`Number values must be numeric only. Got "${text}" instead`);
+            expect(error.message).toBeEqual(`Number values must be numeric only. Got "${text}" instead`);
           });
         });
       });
@@ -157,7 +158,7 @@ describe("[Unit] Codecs.test.ts", () => {
           it(`[${variant}] returns its string representation`, () => {
             const encoded = Codecs.Number.encode(num);
 
-            expect(encoded).toBe(text);
+            expect(encoded).toBeEqual(text);
           });
         });
       });
@@ -167,7 +168,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.Number.encode("some" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "some". A number value was expected');
+          expect(error.message).toBeEqual('Unable to encode "some". A number value was expected');
         });
       });
     });
@@ -178,7 +179,7 @@ describe("[Unit] Codecs.test.ts", () => {
       it("returns the same string", () => {
         const decoded = Codecs.String.decode("foo");
 
-        expect(decoded).toBe("foo");
+        expect(decoded).toBeEqual("foo");
       });
     });
 
@@ -187,7 +188,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the same string value", () => {
           const encoded = Codecs.String.encode("foo");
 
-          expect(encoded).toBe("foo");
+          expect(encoded).toBeEqual("foo");
         });
       });
 
@@ -196,7 +197,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.String.encode({ foo: 1 } as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "[object Object]". A string value was expected');
+          expect(error.message).toBeEqual('Unable to encode "[object Object]". A string value was expected');
         });
       });
     });
@@ -250,7 +251,7 @@ describe("[Unit] Codecs.test.ts", () => {
             const error = captureError(() => Codecs.array(Codecs.Number).decode("[1,2,]"));
 
             expect(error).toBeInstanceOf(CodecDecodeError);
-            expect(error.message).toBe('Number values must be numeric only. Got "" instead');
+            expect(error.message).toBeEqual('Number values must be numeric only. Got "" instead');
           });
         });
       });
@@ -260,7 +261,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.array(Codecs.Number).decode("1,2,3"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe(dedent`
+          expect(error.message).toBeEqual(dedent`
             Array values must be either an empty string (for empty arrays) or be \
             surrounded by square brackets "[...]". Got "1,2,3" instead
           `);
@@ -274,7 +275,7 @@ describe("[Unit] Codecs.test.ts", () => {
           it("returns an empty string", () => {
             const encoded = Codecs.array(Codecs.String).encode([]);
 
-            expect(encoded).toBe("");
+            expect(encoded).toBeEqual("");
           });
         });
 
@@ -282,14 +283,14 @@ describe("[Unit] Codecs.test.ts", () => {
           it("returns the string representation of the array", () => {
             const encoded = Codecs.array(Codecs.Number).encode([1, 2, 3]);
 
-            expect(encoded).toBe("[1,2,3]");
+            expect(encoded).toBeEqual("[1,2,3]");
           });
 
           context("and the array contains only one empty string", () => {
             it("returns exactly []", () => {
               const encoded = Codecs.array(Codecs.String).encode([""]);
 
-              expect(encoded).toBe("[]");
+              expect(encoded).toBeEqual("[]");
             });
           });
 
@@ -298,7 +299,7 @@ describe("[Unit] Codecs.test.ts", () => {
               it(`[${variant}] returns exatly ${text}`, () => {
                 const encoded = Codecs.array(Codecs.String).encode(array);
 
-                expect(encoded).toBe(text);
+                expect(encoded).toBeEqual(text);
               });
             });
           });
@@ -309,7 +310,7 @@ describe("[Unit] Codecs.test.ts", () => {
             const error = captureError(() => Codecs.array(Codecs.Number).encode([1, 2, ""] as any));
 
             expect(error).toBeInstanceOf(CodecEncodeError);
-            expect(error.message).toBe('Unable to encode "". A number value was expected');
+            expect(error.message).toBeEqual('Unable to encode "". A number value was expected');
           });
         });
       });
@@ -319,7 +320,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.array(Codecs.Number).encode({ } as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "[object Object]". An array value was expected');
+          expect(error.message).toBeEqual('Unable to encode "[object Object]". An array value was expected');
         });
       });
     });
@@ -332,7 +333,7 @@ describe("[Unit] Codecs.test.ts", () => {
           it("returns its number literal value", () => {
             const decoded = Codecs.numberLiteral(1, 2, 3).decode("2");
 
-            expect(decoded).toBe(2);
+            expect(decoded).toBeEqual(2);
           });
         });
 
@@ -341,7 +342,7 @@ describe("[Unit] Codecs.test.ts", () => {
             const error = captureError(() => Codecs.numberLiteral(1, 2, 3).decode("5"));
 
             expect(error).toBeInstanceOf(CodecDecodeError);
-            expect(error.message).toBe('Literal value must be one of "[1, 2, 3]". Got "5" instead');
+            expect(error.message).toBeEqual('Literal value must be one of "[1, 2, 3]". Got "5" instead');
           });
         });
       });
@@ -351,7 +352,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.numberLiteral(1, 2, 3).decode("foo"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Number values must be numeric only. Got "foo" instead');
+          expect(error.message).toBeEqual('Number values must be numeric only. Got "foo" instead');
         });
       });
     });
@@ -361,7 +362,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns its string representation", () => {
           const encoded = Codecs.numberLiteral(1, 2, 3).encode(2);
 
-          expect(encoded).toBe("2");
+          expect(encoded).toBeEqual("2");
         });
       });
 
@@ -370,7 +371,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.numberLiteral(1, 2, 3).encode(5 as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "5". A literal value of "[1, 2, 3]" was expected');
+          expect(error.message).toBeEqual('Unable to encode "5". A literal value of "[1, 2, 3]" was expected');
         });
       });
     });
@@ -390,7 +391,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the inner codec decoded value", () => {
           const decoded = Codecs.null(Codecs.Boolean).decode("true");
 
-          expect(decoded).toBe(true);
+          expect(decoded).toBeEqual(true);
         });
       });
 
@@ -399,7 +400,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.null(Codecs.Boolean).decode("foo"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Boolean values must be "true" or "false". Got "foo" instead');
+          expect(error.message).toBeEqual('Boolean values must be "true" or "false". Got "foo" instead');
         });
       });
     });
@@ -409,7 +410,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns exactly 'null'", () => {
           const encoded = Codecs.null(Codecs.String).encode(null);
 
-          expect(encoded).toBe("null");
+          expect(encoded).toBeEqual("null");
         });
       });
 
@@ -417,7 +418,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the inner codec encoded value", () => {
           const encoded = Codecs.null(Codecs.Boolean).encode(true);
 
-          expect(encoded).toBe("true");
+          expect(encoded).toBeEqual("true");
         });
       });
 
@@ -426,7 +427,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.null(Codecs.Boolean).encode("foo" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "foo". A boolean value was expected');
+          expect(error.message).toBeEqual('Unable to encode "foo". A boolean value was expected');
         });
       });
     });
@@ -446,7 +447,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns undefined as the value", () => {
           const decoded = Codecs.nullish(Codecs.String).decode("undefined");
 
-          expect(decoded).toBeUndefined();
+          expect(decoded).not.toBePresent();
         });
       });
 
@@ -454,7 +455,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the inner codec decoded value", () => {
           const decoded = Codecs.nullish(Codecs.Boolean).decode("true");
 
-          expect(decoded).toBe(true);
+          expect(decoded).toBeEqual(true);
         });
       });
 
@@ -463,7 +464,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.nullish(Codecs.Boolean).decode("foo"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Boolean values must be "true" or "false". Got "foo" instead');
+          expect(error.message).toBeEqual('Boolean values must be "true" or "false". Got "foo" instead');
         });
       });
     });
@@ -473,7 +474,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns exactly 'null'", () => {
           const encoded = Codecs.nullish(Codecs.String).encode(null);
 
-          expect(encoded).toBe("null");
+          expect(encoded).toBeEqual("null");
         });
       });
 
@@ -481,7 +482,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns exactly 'undefined'", () => {
           const encoded = Codecs.nullish(Codecs.String).encode(undefined);
 
-          expect(encoded).toBe("undefined");
+          expect(encoded).toBeEqual("undefined");
         });
       });
 
@@ -489,7 +490,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the inner codec encoded value", () => {
           const encoded = Codecs.nullish(Codecs.Boolean).encode(true);
 
-          expect(encoded).toBe("true");
+          expect(encoded).toBeEqual("true");
         });
       });
 
@@ -498,7 +499,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.nullish(Codecs.Boolean).encode("foo" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "foo". A boolean value was expected');
+          expect(error.message).toBeEqual('Unable to encode "foo". A boolean value was expected');
         });
       });
     });
@@ -510,7 +511,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns its string literal value", () => {
           const decoded = Codecs.stringLiteral("foo", "bar", "baz").decode("foo");
 
-          expect(decoded).toBe("foo");
+          expect(decoded).toBeEqual("foo");
         });
       });
 
@@ -519,7 +520,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.stringLiteral("foo", "bar", "baz").decode("fizz"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Literal value must be one of "[foo, bar, baz]". Got "fizz" instead');
+          expect(error.message).toBeEqual('Literal value must be one of "[foo, bar, baz]". Got "fizz" instead');
         });
       });
     });
@@ -529,7 +530,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the literal as a string", () => {
           const encoded = Codecs.stringLiteral("foo", "bar", "baz").encode("baz");
 
-          expect(encoded).toBe("baz");
+          expect(encoded).toBeEqual("baz");
         });
       });
 
@@ -538,7 +539,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.stringLiteral("foo", "bar", "baz").encode("fizz" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "fizz". A literal value of "[foo, bar, baz]" was expected');
+          expect(error.message).toBeEqual('Unable to encode "fizz". A literal value of "[foo, bar, baz]" was expected');
         });
       });
     });
@@ -550,7 +551,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns undefined as the value", () => {
           const decoded = Codecs.undefined(Codecs.String).decode("undefined");
 
-          expect(decoded).toBeUndefined();
+          expect(decoded).not.toBePresent();
         });
       });
 
@@ -558,7 +559,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the inner codec decoded value", () => {
           const decoded = Codecs.undefined(Codecs.Boolean).decode("false");
 
-          expect(decoded).toBe(false);
+          expect(decoded).toBeEqual(false);
         });
       });
 
@@ -567,7 +568,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.undefined(Codecs.Boolean).decode("foo"));
 
           expect(error).toBeInstanceOf(CodecDecodeError);
-          expect(error.message).toBe('Boolean values must be "true" or "false". Got "foo" instead');
+          expect(error.message).toBeEqual('Boolean values must be "true" or "false". Got "foo" instead');
         });
       });
     });
@@ -577,7 +578,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns exactly 'undefined'", () => {
           const encoded = Codecs.undefined(Codecs.String).encode(undefined);
 
-          expect(encoded).toBe("undefined");
+          expect(encoded).toBeEqual("undefined");
         });
       });
 
@@ -585,7 +586,7 @@ describe("[Unit] Codecs.test.ts", () => {
         it("returns the inner codec encoded value", () => {
           const encoded = Codecs.undefined(Codecs.Boolean).encode(false);
 
-          expect(encoded).toBe("false");
+          expect(encoded).toBeEqual("false");
         });
       });
 
@@ -594,7 +595,7 @@ describe("[Unit] Codecs.test.ts", () => {
           const error = captureError(() => Codecs.undefined(Codecs.Boolean).encode("foo" as any));
 
           expect(error).toBeInstanceOf(CodecEncodeError);
-          expect(error.message).toBe('Unable to encode "foo". A boolean value was expected');
+          expect(error.message).toBeEqual('Unable to encode "foo". A boolean value was expected');
         });
       });
     });
@@ -611,8 +612,12 @@ describe("[Unit] Codecs.test.ts", () => {
       addCodec("Foo", codec);
       addCodec("makeFoo", makeFoo);
 
-      expect((Codecs as any).Foo).toBe(codec);
-      expect((Codecs as any).makeFoo).toBe(makeFoo);
+      expect((Codecs as any).Foo)
+        .asType(TypeFactories.object<Codec<"foo">>())
+        .toBeEqual(codec);
+      expect((Codecs as any).makeFoo)
+        .asType(TypeFactories.Function)
+        .toBeEqual(makeFoo);
     });
   });
 });

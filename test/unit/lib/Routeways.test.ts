@@ -1,4 +1,4 @@
-import { expect } from "iko";
+import { expect } from "@stackbuilders/assertive-ts";
 
 import { Codecs } from "../../../src/lib/Codecs";
 import { UrlParserError } from "../../../src/lib/errors/UrlParserError";
@@ -64,13 +64,13 @@ describe("[Unit] SafeRouter.test.ts", () => {
 
     describe("#segment", () => {
       it("returns the segment of the route", () => {
-        expect(TestRoutes.home.$config().segment).toBe("/home");
-        expect(TestRoutes.users.view.$config().segment).toBe("/view");
-        expect(TestRoutes.users.edit.profile.$config().segment).toBe("/profile");
+        expect(TestRoutes.home.$config().segment).toBeEqual("/home");
+        expect(TestRoutes.users.view.$config().segment).toBeEqual("/view");
+        expect(TestRoutes.users.edit.profile.$config().segment).toBeEqual("/profile");
 
-        expect(TestRoutes.library.$config().segment).toBe("/library/:libId");
-        expect(TestRoutes.library.author.$config().segment).toBe("/author/:authorId");
-        expect(TestRoutes.library.author.book.$config().segment).toBe("/book/:bookId");
+        expect(TestRoutes.library.$config().segment).toBeEqual("/library/:libId");
+        expect(TestRoutes.library.author.$config().segment).toBeEqual("/author/:authorId");
+        expect(TestRoutes.library.author.book.$config().segment).toBeEqual("/book/:bookId");
       });
     });
 
@@ -94,7 +94,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       it("returns the full path", () => {
         const fullpath = TestRoutes.users.edit.profile.makeUrl();
 
-        expect(fullpath).toBe("/users/edit/profile");
+        expect(fullpath).toBeEqual("/users/edit/profile");
       });
     });
 
@@ -117,10 +117,10 @@ describe("[Unit] SafeRouter.test.ts", () => {
           tomeId: "2b",
         });
 
-        expect(fullpath1).toBe("/library/1");
-        expect(fullpath2).toBe("/library/1/author/2");
-        expect(fullpath3).toBe("/library/1/author/2/book/3");
-        expect(fullpath4).toBe("/library/1/author/2/collection/1a/tome/2b");
+        expect(fullpath1).toBeEqual("/library/1");
+        expect(fullpath2).toBeEqual("/library/1/author/2");
+        expect(fullpath3).toBeEqual("/library/1/author/2/book/3");
+        expect(fullpath4).toBeEqual("/library/1/author/2/collection/1a/tome/2b");
       });
     });
 
@@ -137,9 +137,9 @@ describe("[Unit] SafeRouter.test.ts", () => {
           other: true,
         });
 
-        expect(fullpath1).toBe("/static1?page=3&search=%5Bone%2Ctwo%2Cthree%5D&size=50");
-        expect(fullpath2).toBe("/level1/static2?some=hello%20world!");
-        expect(fullpath3).toBe("/level1/level2/static3?other=true");
+        expect(fullpath1).toBeEqual("/static1?page=3&search=%5Bone%2Ctwo%2Cthree%5D&size=50");
+        expect(fullpath2).toBeEqual("/level1/static2?some=hello%20world!");
+        expect(fullpath3).toBeEqual("/level1/level2/static3?other=true");
       });
     });
 
@@ -162,9 +162,9 @@ describe("[Unit] SafeRouter.test.ts", () => {
           libId: 1,
         });
 
-        expect(fullpath1).toBe("/library/1?limit=true&page=3");
-        expect(fullpath2).toBe("/library/1/author/2?tab=tab%20one");
-        expect(fullpath3).toBe("/library/1/author/2/book/3?isFree=false");
+        expect(fullpath1).toBeEqual("/library/1?limit=true&page=3");
+        expect(fullpath2).toBeEqual("/library/1/author/2?tab=tab%20one");
+        expect(fullpath3).toBeEqual("/library/1/author/2/book/3?isFree=false");
       });
     });
   });
@@ -244,7 +244,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
           const error = captureError(() => route.parseUrl(url));
 
           expect(error).toBeInstanceOf(UrlParserError);
-          expect(error.message).toBe(`Unable to parse "${url}". The url does not match the template "${route.template()}"`);
+          expect(error.message).toBeEqual(`Unable to parse "${url}". The url does not match the template "${route.template()}"`);
         });
       });
     });
@@ -252,13 +252,13 @@ describe("[Unit] SafeRouter.test.ts", () => {
 
   describe(".template", () => {
     it("returns the full path of the route", () => {
-      expect(TestRoutes.home.template()).toBe("/home");
-      expect(TestRoutes.users.view.template()).toBe("/users/view");
-      expect(TestRoutes.users.edit.profile.template()).toBe("/users/edit/profile");
+      expect(TestRoutes.home.template()).toBeEqual("/home");
+      expect(TestRoutes.users.view.template()).toBeEqual("/users/view");
+      expect(TestRoutes.users.edit.profile.template()).toBeEqual("/users/edit/profile");
 
-      expect(TestRoutes.library.template()).toBe("/library/:libId");
-      expect(TestRoutes.library.author.template()).toBe("/library/:libId/author/:authorId");
-      expect(TestRoutes.library.author.book.template()).toBe("/library/:libId/author/:authorId/book/:bookId");
+      expect(TestRoutes.library.template()).toBeEqual("/library/:libId");
+      expect(TestRoutes.library.author.template()).toBeEqual("/library/:libId/author/:authorId");
+      expect(TestRoutes.library.author.book.template()).toBeEqual("/library/:libId/author/:authorId/book/:bookId");
     });
   });
 });

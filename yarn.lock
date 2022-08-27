@@ -556,6 +556,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stackbuilders/assertive-ts@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@stackbuilders/assertive-ts@npm:1.1.0"
+  dependencies:
+    "@cometlib/dedent": ^0.8.0-es.10
+  checksum: e39148cb30ccf04f6a2f5c93b2821758778db4bf16fb12b582d051f44e7d8c4ee779dc6d5e11f4146fd15a14f03b616b2cb2baa1ef315a8e71d5812b904dde3d
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -746,13 +755,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-regex@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "ansi-regex@npm:3.0.1"
-  checksum: 09daf180c5f59af9850c7ac1bd7fda85ba596cc8cbeb210826e90755f06c818af86d9fa1e6e8322fab2c3b9e9b03f56c537b42241139f824dd75066a1e7257cc
-  languageName: node
-  linkType: hard
-
 "ansi-regex@npm:^5.0.1":
   version: 5.0.1
   resolution: "ansi-regex@npm:5.0.1"
@@ -760,7 +762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-styles@npm:^3.2.0, ansi-styles@npm:^3.2.1":
+"ansi-styles@npm:^3.2.1":
   version: 3.2.1
   resolution: "ansi-styles@npm:3.2.1"
   dependencies:
@@ -885,16 +887,6 @@ __metadata:
     cosmiconfig: ^6.0.0
     resolve: ^1.12.0
   checksum: 59b09a21cf3ae1e14186c1b021917d004b49b953824b24953a54c6502da79e8051d4ac31cfd4a0ae7f6ea5ddf1f7edd93df4895dd3c3982a5b2431859c2889ac
-  languageName: node
-  linkType: hard
-
-"babel-runtime@npm:^6.26.0":
-  version: 6.26.0
-  resolution: "babel-runtime@npm:6.26.0"
-  dependencies:
-    core-js: ^2.4.0
-    regenerator-runtime: ^0.11.0
-  checksum: 8aeade94665e67a73c1ccc10f6fd42ba0c689b980032b70929de7a6d9a12eb87ef51902733f8fefede35afea7a5c3ef7e916a64d503446c1eedc9e3284bd3d50
   languageName: node
   linkType: hard
 
@@ -1325,13 +1317,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^2.4.0":
-  version: 2.6.12
-  resolution: "core-js@npm:2.6.12"
-  checksum: 44fa9934a85f8c78d61e0c8b7b22436330471ffe59ec5076fe7f324d6e8cf7f824b14b1c81ca73608b13bdb0fef035bd820989bf059767ad6fa13123bb8bd016
-  languageName: node
-  linkType: hard
-
 "core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
@@ -1526,13 +1511,6 @@ __metadata:
   version: 5.0.0
   resolution: "diff@npm:5.0.0"
   checksum: f19fe29284b633afdb2725c2a8bb7d25761ea54d321d8e67987ac851c5294be4afeab532bd84531e02583a3fe7f4014aa314a3eda84f5590e7a9e6b371ef3b46
-  languageName: node
-  linkType: hard
-
-"diff@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "diff@npm:3.5.0"
-  checksum: 00842950a6551e26ce495bdbce11047e31667deea546527902661f25cc2e73358967ebc78cf86b1a9736ec3e14286433225f9970678155753a6291c3bca5227b
   languageName: node
   linkType: hard
 
@@ -2125,38 +2103,6 @@ __metadata:
   version: 5.2.0
   resolution: "ignore@npm:5.2.0"
   checksum: 6b1f926792d614f64c6c83da3a1f9c83f6196c2839aa41e1e32dd7b8d174cef2e329d75caabb62cb61ce9dc432f75e67d07d122a037312db7caa73166a1bdb77
-  languageName: node
-  linkType: hard
-
-"iko@npm:0.6.0":
-  version: 0.6.0
-  resolution: "iko@npm:0.6.0"
-  dependencies:
-    babel-runtime: ^6.26.0
-    diff: ^3.5.0
-    lodash: ^4.17.10
-    pretty-format: ^22.4.3
-    rtext: ^0.1.0
-    rtext-writer: ^0.1.1
-  peerDependencies:
-    tslib: ^1.9.0
-  checksum: 310d277d5795ad184c57cc9cafd16f2b9dfda39c00bdf10914dff9c7258f53935a2f4025ba3d049e4dde64f8f8ccfde45693df9030473e8a929009f1ef19767f
-  languageName: node
-  linkType: hard
-
-"iko@patch:iko@npm:0.6.0#.yarn/patches/iko-npm-0.6.0-c81ab722d7.patch::locator=ts-routeways%40workspace%3A.":
-  version: 0.6.0
-  resolution: "iko@patch:iko@npm%3A0.6.0#.yarn/patches/iko-npm-0.6.0-c81ab722d7.patch::version=0.6.0&hash=9b68ee&locator=ts-routeways%40workspace%3A."
-  dependencies:
-    babel-runtime: ^6.26.0
-    diff: ^3.5.0
-    lodash: ^4.17.10
-    pretty-format: ^22.4.3
-    rtext: ^0.1.0
-    rtext-writer: ^0.1.1
-  peerDependencies:
-    tslib: ^1.9.0
-  checksum: 9713accd4045e7a5e95af05cb674fd461d0bf02961e577f6140cbe8786c4e774360651f71a8ec6c185947f3741831f3fe4269af05098e20ff3f4aeefdcf2a554
   languageName: node
   linkType: hard
 
@@ -2759,7 +2705,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.10, lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
+"lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -3786,16 +3732,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^22.4.3":
-  version: 22.4.3
-  resolution: "pretty-format@npm:22.4.3"
-  dependencies:
-    ansi-regex: ^3.0.0
-    ansi-styles: ^3.2.0
-  checksum: 300f4fcf32b6d49cd4e6ed81ee20e4e5484ffb55d3791f1ffe7a5f410d0ed14027134fc04e0032bc09b4a44e548472ead12663384c44bc5813eb5f61fe244830
-  languageName: node
-  linkType: hard
-
 "proc-log@npm:^2.0.0, proc-log@npm:^2.0.1":
   version: 2.0.1
   resolution: "proc-log@npm:2.0.1"
@@ -4039,13 +3975,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.11.0":
-  version: 0.11.1
-  resolution: "regenerator-runtime@npm:0.11.1"
-  checksum: 3c97bd2c7b2b3247e6f8e2147a002eb78c995323732dad5dc70fac8d8d0b758d0295e7015b90d3d444446ae77cbd24b9f9123ec3a77018e81d8999818301b4f4
-  languageName: node
-  linkType: hard
-
 "regenerator-runtime@npm:^0.13.4":
   version: 0.13.9
   resolution: "regenerator-runtime@npm:0.13.9"
@@ -4138,22 +4067,6 @@ __metadata:
   bin:
     rimraf: bin.js
   checksum: 87f4164e396f0171b0a3386cc1877a817f572148ee13a7e113b238e48e8a9f2f31d009a92ec38a591ff1567d9662c6b67fd8818a2dbbaed74bc26a87a2a4a9a0
-  languageName: node
-  linkType: hard
-
-"rtext-writer@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "rtext-writer@npm:0.1.1"
-  peerDependencies:
-    rtext: ^0.1.0
-  checksum: c23780e21ce25d479a8cdbd546c579db29d047929411c1e39b217898bc6edceba0c6e658970688d0fc09322104b21ad9dd18ce778eccad23ef49e05874518ef7
-  languageName: node
-  linkType: hard
-
-"rtext@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "rtext@npm:0.1.0"
-  checksum: 3b10db417b9200d0d02e6ce8e2dacc2d016043fe98f96b986dc9ec30a1f28f4177166c34461dbf30c2e0cc66196f13f091d3a6e0f4e68fb29945431337671636
   languageName: node
   linkType: hard
 
@@ -4736,11 +4649,11 @@ __metadata:
   resolution: "ts-routeways@workspace:."
   dependencies:
     "@cometlib/dedent": ^0.8.0-es.10
+    "@stackbuilders/assertive-ts": ^1.1.0
     "@types/mocha": ^9.1.1
     "@types/node": ^18.0.3
     "@types/react": ^18.0.15
     cross-env: ^7.0.3
-    iko: ^0.6.0
     mocha: ^10.0.0
     react: ^18.2.0
     semantic-release: ^19.0.3

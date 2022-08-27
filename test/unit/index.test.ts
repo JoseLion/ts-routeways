@@ -1,4 +1,4 @@
-import { expect } from "iko";
+import { expect } from "@stackbuilders/assertive-ts";
 
 import { Routeways } from "../../src";
 import { RoutewaysBuilder } from "../../src/lib/Routeways";
