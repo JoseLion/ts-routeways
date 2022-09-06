@@ -20,7 +20,7 @@ type PathVarsCapture<P extends PathLike> =
 
 type PathVars<P extends PathLike> =
   PathVarsCapture<P> extends never
-    ? { }
+    ? Record<never, never>
     : Record<PathVarsCapture<P>, Codec<any>>;
 
 type MakeUrl<V extends ParamsConfig, Q extends ParamsConfig> =
@@ -46,9 +46,9 @@ type MakeUrl<V extends ParamsConfig, Q extends ParamsConfig> =
 
 export type Routeway<
   P extends PathLike = PathLike,
-  V extends ParamsConfig = { },
-  Q extends ParamsConfig = { },
-  S extends Record<string, Routeway> = { },
+  V extends ParamsConfig = Record<never, never>,
+  Q extends ParamsConfig = Record<never, never>,
+  S extends Record<string, Routeway> = Record<never, never>,
 > = MakeUrl<V, Q> & {
   /**
    * Convenience method that returns the configuration of the route.
@@ -99,21 +99,14 @@ export type Routeway<
 
 type MakeSubRoutes<B extends RoutewaysBuilder<any>, V extends ParamsConfig> =
   B extends RoutewaysBuilder<infer M>
-    ? M extends Record<infer N, Routeway>
-      ? { [K in N]: RecurseSubRoute<M[K], V>; }
+    ? M extends Record<string, Routeway>
+      ? { [K in keyof M]: RecurseSubRoute<M[K], V>; }
       : never
     : never;
 
 type RecurseSubRoute<S extends Routeway, V extends ParamsConfig> =
-  S extends Routeway
-    ? Routeway<
-        ReturnType<S["$config"]>["segment"],
-        { [K in keyof (V & ReturnType<S["$config"]>["pathVars"])]: (V & ReturnType<S["$config"]>["pathVars"])[K]; },
-        ReturnType<S["$config"]>["queryParams"],
-        S extends Routeway<any, infer PV, any, infer SR>
-          ? { [K in keyof SR]: RecurseSubRoute<SR[K], { [N in keyof (V & PV)]: (V & PV)[N] }>; }
-          : { }
-      >
+  S extends Routeway<infer G, infer PV, infer Q, infer SR>
+    ? Routeway<G, V & PV, Q, { [K in keyof SR]: RecurseSubRoute<SR[K], V & PV>; }>
     : never;
 
 type PathConfig<
@@ -173,24 +166,22 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
       ? config
       : { ...config, pathVars: { } as V };
 
-    const newRoute: Routeway<P, V, Q> = {
-      $config: () => ({
-        pathVars,
-        queryParams,
-        segment: path,
-        subRoutes: { },
-      }),
-      makeUrl: () => path,
-      parseUrl: () => ({
-        pathVars: { } as CodecToPathVars<V>,
-        queryParams: { } as CodecToQueryParams<Q>,
-      }),
-      template: () => path,
-    };
-
     return new RoutewaysBuilder({
       ...this.routes,
-      [name]: newRoute,
+      [name]: {
+        $config: () => ({
+          pathVars,
+          queryParams,
+          segment: path,
+          subRoutes: { },
+        }),
+        makeUrl: () => path,
+        parseUrl: () => ({
+          pathVars: { } as CodecToPathVars<V>,
+          queryParams: { } as CodecToQueryParams<Q>,
+        }),
+        template: () => path,
+      },
     });
   }
 
@@ -208,7 +199,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     P extends PathLike,
     V extends PathVars<P>,
     Q extends ParamsConfig,
-    S extends RoutewaysBuilder<{ }>,
+    S extends RoutewaysBuilder<any>,
   >(
     config: NestConfig<N, P, V, Q, S>,
   ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, MakeSubRoutes<S, V>> }> {
