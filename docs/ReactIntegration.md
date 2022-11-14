@@ -72,6 +72,8 @@ export const usePathVars = makePathVarsHook(useLocation);
 
 export const useQueryParam = makeQueryParamHook(useLocation, useNavigate);
 
+export const useAllQueryParams = makeAllQueryParamsHook(useLocation, useNavigate);
+
 export const useRouteParams = makeRouteParamsHook(useLocation, useNavigate);
 ```
 
@@ -127,6 +129,34 @@ const [byName, setByName] = useQueryParam(MainRoutes.users.search, "byName");
 // ...
 
 <input type="search" onChange={setByName} value={byName} />
+```
+
+### makeAllQueryParamsHook
+
+Creates a hook that expects a `Routeways` route and returns a React state of those query parameters. Whenever the state of the parameter is changed, a navigation is executed to change the query parameters in the source too.
+
+```tsx
+const { queryParams, setQueryParams } = useAllQueryParams(MainRoutes.users.search);
+
+const handleStatusChange = (status: Status): void => {
+  setQueryParams(prev => ({
+    ...prev,
+    status,
+    page: 1
+  }));
+}
+
+// ...
+
+<>
+  <Select
+    options={statuses}
+    selected={queryParams.status}
+    onChange={handleStatusChange}
+  >
+
+  <Pagination page={queryParams.page}>
+</>
 ```
 
 ### makeRouteParamsHook(..)

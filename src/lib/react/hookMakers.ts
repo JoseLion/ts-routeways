@@ -30,6 +30,11 @@ type QueryParamHook = <
   Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>
 ];
 
+type AllQueryParamsHook = <Q extends ParamsConfig>(route: Routeway<PathLike, ParamsConfig, Q>) => {
+  queryParams: CodecToQueryParams<Q>,
+  setQueryParams: Dispatch<SetStateAction<CodecToQueryParams<Q>>>;
+};
+
 interface NavigateOptions {
   replace?: boolean;
 }
@@ -177,6 +182,37 @@ export function makeQueryParamHook(getLocation: () => LocationLike, getNavigate:
     }, [queryParam]);
 
     return [queryParam, setQueryParam];
+  };
+}
+
+/**
+ * Creates a hook that expects a `Routeways` route and returns a React state of
+ * those query parameters. Whenever the state of the parameter is changed, a
+ * navigation is executed to change the query parameters in the source too.
+ *
+ * @param getLocation a function or hook that provides a location-like object
+ * @param getNavigate a function or hook that provideds a navigation function
+ * @returns a hook to manage all query parameters of a route
+ */
+export function makeAllQueryParamsHook(
+  getLocation: () => LocationLike,
+  getNavigate: () => NavigateFn,
+): AllQueryParamsHook {
+  return route => {
+    const navigateFn = getNavigate();
+
+    const { hash, pathname, search } = getLocation();
+
+    const [queryParams, setQueryParams] = useState(() => route.parseUrl(pathname.concat(hash, search)).queryParams);
+
+    useEffect(() => {
+      const { pathVars } = route.parseUrl(pathname.concat(hash, search));
+      const url = route.makeUrl({ ...pathVars, ...queryParams });
+
+      navigateFn(url);
+    }, [queryParams]);
+
+    return { queryParams, setQueryParams };
   };
 }
 
