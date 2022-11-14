@@ -1,6 +1,19 @@
+
+
 remote_theme: mmistakes/minimal-mistakes
 
 minimal_mistakes_skin: air
+
+atom_feed:
+  hide: true
+
+repository: JoseLion/ts-routeways
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: splash
 
 plugins:
   - jekyll-include-cache
