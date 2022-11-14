@@ -218,9 +218,11 @@ Finally, the `RouteConfig` object represents the configuration of the route and 
 | segment | `PathLike` | The template of this route segment. Differently from the `.template()` method, this property does not contain the template of the full path, but only of the specific route. |
 | subRoutes | `Record<string, Routeway>` | A record of the nested `Routeway` instances of the route (if any). |
 
-## More Examples
+## Working with ReactJS ⚛️
 
-- [Usage with React](./docs/ReactExample.md)
+Although the design of ts-routeways is meant to be agnostic, it provides a few helpers to create custom hooks that will allow you to handle navigation, path variables, and query parameters, all in a ReactJS fashion. You can find further documentation and examples in the link below:
+
+[React Interagation Docs 📘](./docs/ReactIntegration.md)
 
 ## Something's missing?
 
