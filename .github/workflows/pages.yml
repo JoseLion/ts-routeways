@@ -1,9 +1,10 @@
 ---
+
 name: Pages
 
 on:
   push:
-    branches: ["release"]
+    branches: [release]
 
 permissions:
   contents: read
@@ -19,13 +20,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/configure-pages@v1
-      - uses: actions/jekyll-build-pages@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
-      - uses: actions/upload-pages-artifact@v1
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
 
   deploy:
     environment:
@@ -35,4 +40,8 @@ jobs:
     needs: build
 
     steps:
-      - uses: actions/deploy-pages@v1
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
+...
