@@ -3,13 +3,26 @@
   "version": "0.0.0",
   "description": "Lightweight and type-safe! All-in-one solution to define and consume routes",
   "repository": "git@github.com:JoseLion/ts-routeways.git",
-  "author": "Jose Luis Leon <joseluis5000l@gmail.com>",
+  "homepage": "https://joselion.github.io/ts-routeways/",
+  "bugs": "https://github.com/JoseLion/ts-routeways/issues",
+  "author": "Jose Luis Leon <joseluis5000l@gmail.com> (https://github.com/JoseLion)",
   "license": "MIT",
+  "keywords": [
+    "codecs",
+    "react",
+    "querystring",
+    "router",
+    "routes",
+    "routeways",
+    "routing",
+    "typesafe",
+    "typescript"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/",
-    "src"
+    "src/"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
@@ -17,15 +30,16 @@
     "compile": "tsc -p tsconfig.json",
     "lint": "tslint -c tslint.json \"!(build|dist)/**/*.ts?(x)\"",
     "release": "semantic-release",
-    "test": "cross-env NODE_ENV=test TS_NODE_TRANSPILE_ONLY=true mocha \"test/**/*.test.ts?(x)\""
+    "test": "NODE_ENV=test mocha \"test/**/*.test.ts?(x)\""
   },
-  "packageManager": "yarn@3.2.1",
+  "dependencies": {
+    "@cometlib/dedent": "^0.8.0-es.10"
+  },
   "devDependencies": {
     "@stackbuilders/assertive-ts": "^1.1.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.7.15",
     "@types/react": "^18.0.18",
-    "cross-env": "^7.0.3",
     "mocha": "^10.0.0",
     "react": "^18.2.0",
     "semantic-release": "^19.0.5",
@@ -33,12 +47,6 @@
     "tslib": "^2.4.0",
     "tslint": "^6.1.3",
     "typescript": "4.8.2"
-  },
-  "dependencies": {
-    "@cometlib/dedent": "^0.8.0-es.10"
-  },
-  "resolutions": {
-    "iko@^0.6.0": "patch:iko@npm:0.6.0#.yarn/patches/iko-npm-0.6.0-c81ab722d7.patch"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -48,7 +56,5 @@
       "optional": true
     }
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "packageManager": "yarn@3.2.1"
 }
