@@ -1,8 +1,8 @@
 import { RoutewaysBuilder } from "./lib/Routeways";
 
-export { type Routeway } from "./lib/Routeways";
-export { type PathLike } from "./lib/commons.types";
-export { type Codec, type CodecsType, Codecs, addCodec } from "./lib/Codecs";
+export { Routeway } from "./lib/Routeways";
+export { PathLike } from "./lib/commons.types";
+export { Codec, CodecsType, Codecs, addCodec } from "./lib/Codecs";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
 export {
