@@ -109,114 +109,33 @@ MainRoutes.users.view.template(); // -> /users/view/:userId
 
 ## Custom Codecs
 
-In `ts-routeways` a codec is just an object that defines a decoder and an encoder. These are generic functions, where `T` is the type of the codec:
-
-- **Decoder:** A function that receives a raw `string` value and transforms it into a `T` value.
-- **Encoder:** A function that receives a `T` value and transforms it into a raw `string` value.
-
-Let's assume you want to use an awesome UUID library that has its own types, and you want to use those UUIDs in your routes. Here's how you'd add your custom codec:
-
+Only the most basic data types are priveded by the `Codecs` helper. Sometimes you'll find yourself in the need of a more complex codec, some specific data type, or aserializable clas instance. With `ts-routeways` you can use custom codecs, and also use its extension mechanism for the `Codecs` helper, so you can have all your codecs on one place. You need only to create an object containing a `decode` and an `encode` method:
 ```ts
-// In your application entry point, or before building/exporting your `Routeways` instance(s)
-
-import { UUID } from "my-awesome-uuid-lib";
-import { type Codec, addCodec, CodecDecodeError, CodecEncodeError } from "ts-routeways";
-
-const UUIDCodec: Codec<UUID> = {
-  decode: text => {
-    if (UUID.isValid(text)) {
-      return UUID.parse(text);
-    }
-
-    throw new CodecDecodeError(`Unable to decode "${text}". The value is not a valid UUID. `);
-  },
-  encode: value => {
-    // the type of `value` is `UUID`, but we check it anyways for the sake of runtime safety.
-    if (value instanceof UUID) {
-      return value.toString();
-    }
-
-    throw new CodecEncodeError(`Unable to encode "${value}". A UUID instance was expected`);
-  }
+interface Codec<T> {
+  decode(text: string): T;
+  encode(value: T): string;
 }
-
-// Now add the codec to the `Codecs` object
-addCodec("UUID", UUIDCodec);
 ```
 
-> 🚨 **Important:** Be sure to run the `addCodec(..)` function before you define (or export a definition) of your custom `Routeways`. Otherwise, your definition will not have your custom codecs at the moment of building and you'll get runtime errors.
-
-Now you just need to extend the type definition. Create the file `./typings/ts-routes.d.ts` and add the following:
-
+Optionally, add your codec to the `Codecs` helper. Also, extend the `CodecsType` interface to add the types:
 ```ts
-import { UUID } from "my-awesome-uuid-lib";
-import { type CodecsType, type Codec } from "ts-routeways";
-
 declare module "ts-routeways" {
 
   export interface CodecsType {
-    /**
-     * Codec for `UUID` values
-     */
     UUID: Codec<UUID>;
   }
 }
+
+const UUIDCodec = { /* ... */ };
+
+addCodec("UUID", UUIDCodec);
+
+Codecs.UUID // Ready to use on a router
 ```
 
-And that's it! Now you can go ahead and use `Codecs.UUID` in your routes definition.
+You can find more details and a complete example of custom codecs in the link bellow:
 
-## API Reference
-
-The entry point to the API would be the `Routeways()` function. This is a convenience constructor that takes no arguments and returns a `RoutewaysBuilder` so you can start defining your routes:
-
-```ts
-function Routeways(): RoutewaysBuilder;
-```
-
-Then, the `RoutewaysBuilder` instance provides the following methods: 
-
-| Method | Description |
-| ------ | ----------- |
-| `.path(config: PathConfig): RoutewaysBuilder` | Create a single path on the route under construction. Single paths do not allow nesting and can be considered the latest point of a branch in the router. Returns the same builder instance to continue the route definition. |
-| `.nest(config: NestConfig): RoutewaysBuilder` | Create a path on the route under construction that allows creation of nested routes under it. Returns the same builder instance to continue the route definition. |
-| `.build(): Record<string, Routeway>` | Builds the routes defined by the API and returns a `Routeways` instance shaped by the names of the paths. |
-
-Keep in mind that both `PathConfig` and `NestConfig` are complex, generic, conditional types. For the sake of the API reference, here's a simplified version of their type definition:
-
-```ts
-type PathConfig = {
-  name: string;
-  path: PathLike;
-  queryParams?: ParamsConfig;
-  pathVars: PathVars; // Not always required, it depends on what `path` looks like
-}
-
-type NestConfig = {
-  name: string;
-  path: PathLike;
-  queryParams?: ParamsConfig;
-  pathVars: PathVars; // Not always required, it depends on what `path` looks like
-  subRoutes: RoutewaysBuilder; // another builders instance to create the nested routes
-}
-```
-
-Once you have a `Routeways` instance, these are the methods available on each of your routes:
-
-| Method | Description |
-| ------ | ----------- |
-| `.$config(): RouteConfig` | Convenience method that returns the configuration of the route. See the section below for details on the `RouteConfig` object. |
-| `.makeUrl(params: RouteParams): string` | Creates a raw string URL for the route using the provided parameters. Keep in mind that `params` is not always required, depending on the route, if it had path variables or not.
-| `.parseUrl(uri: string): { pathVars: PathVars; queryParams: QueryParams; }` | Parse a raw URL to get the path variables and query parameters from it. |
-| `.template(): string` | Creates the complete template of the route. Useful when working with other routing libraries that need the context of the path with its variables. |
-
-Finally, the `RouteConfig` object represents the configuration of the route and has the following properties:
-
-| Property | Type | Description |
-| -------- | ---- | ----------- |
-| pathVars | `Record<string, Codec>` | A record of the path variables configuration. The key refers to the name of the path variable and the value is the specific codec for the variable. |
-| queryParams | `Record<string, Codec>` | A record of the query parameters configuration. The key refers to the name of the query parameters and the value is the specific codec for the parameter. |
-| segment | `PathLike` | The template of this route segment. Differently from the `.template()` method, this property does not contain the template of the full path, but only of the specific route. |
-| subRoutes | `Record<string, Routeway>` | A record of the nested `Routeway` instances of the route (if any). |
+[Custom Codecs ⚙️](./docs/CustomCodecs.md)
 
 ## Getting your QueryParam types back
 
@@ -251,6 +170,12 @@ export function searchUsers(params: UsersQueryParams): Promise<User[]> {
 Although the design of ts-routeways is meant to be agnostic, it provides a few helpers to create custom hooks that will allow you to handle navigation, path variables, and query parameters, all in a ReactJS fashion. You can find further documentation and examples in the link below:
 
 [React Interagation Docs 📘](./docs/ReactIntegration.md)
+
+## API Reference
+
+The library is documented on its JSDocs, which is usully the most usuful place for help. However, if you'd like to see the API reference, you can find them in the link below:
+
+[API Reference 📚](./docs/APIReference.md)
 
 ## Something's missing?
 
