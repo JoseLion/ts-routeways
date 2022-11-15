@@ -1,7 +1,7 @@
 import { RoutewaysBuilder } from "./lib/Routeways";
 
 export { Routeway } from "./lib/Routeways";
-export { PathLike } from "./lib/commons.types";
+export { PathLike, InferQueryParams } from "./lib/commons.types";
 export { Codec, CodecsType, Codecs, addCodec } from "./lib/Codecs";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
