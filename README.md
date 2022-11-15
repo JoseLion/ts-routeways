@@ -218,6 +218,34 @@ Finally, the `RouteConfig` object represents the configuration of the route and 
 | segment | `PathLike` | The template of this route segment. Differently from the `.template()` method, this property does not contain the template of the full path, but only of the specific route. |
 | subRoutes | `Record<string, Routeway>` | A record of the nested `Routeway` instances of the route (if any). |
 
+## Getting your QueryParam types back
+
+Sometimes you'd like to use the queryParam types that are already defined in your router somewhere else. For instance, in the argument of the function in charge of making a request with those same query paramenters. This could be a very common pattern, let's assume we have `MainRoutes` as in the [Usage section](#usage), and an API that receives those same `byName` and `showAll` query params.
+
+**Not so safe, isn't it?**
+```ts
+export function searchUsers(params: any): Promise<User[]> {
+//                                  ^ What am I supposed to use here?
+  return axios.get<User[]>("/api/users", { params })
+    .then(({ data }) => data);
+}
+```
+
+Instead of that, you can infer the type of the query params of any route using the types helper `InferQueryParams<R>`, where `R` is the type your route:
+
+**This is better!**
+```ts
+import { InferQueryParams } from "ts-routeways";
+
+type UsersQueryParams = InferQueryParams<typeof MainRoutes.users.search>;
+//   ^ type = { byName?: string; showAll?: boolean; }
+
+export function searchUsers(params: UsersQueryParams): Promise<User[]> {
+  return axios.get<User[]>("/api/users", { params })
+    .then(({ data }) => data);
+}
+```
+
 ## Working with ReactJS ⚛️
 
 Although the design of ts-routeways is meant to be agnostic, it provides a few helpers to create custom hooks that will allow you to handle navigation, path variables, and query parameters, all in a ReactJS fashion. You can find further documentation and examples in the link below:
