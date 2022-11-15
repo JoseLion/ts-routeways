@@ -4671,6 +4671,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-pattern@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "ts-pattern@npm:4.0.6"
+  checksum: d65d715f5269d6264253e11e89a6f2ff576382e7efecc080747540454cda489d302ffe0c8f096fac72efe0b106ee1d6bfd662d1a5d77dbc831801ec490bef95c
+  languageName: node
+  linkType: hard
+
 "ts-routeways@workspace:.":
   version: 0.0.0-use.local
   resolution: "ts-routeways@workspace:."
@@ -4684,6 +4691,7 @@ __metadata:
     react: ^18.2.0
     semantic-release: ^19.0.5
     ts-node: ^10.9.1
+    ts-pattern: ^4.0.6
     tslib: ^2.4.1
     tslint: ^6.1.3
     typescript: 4.8.4

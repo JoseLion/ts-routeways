@@ -199,7 +199,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
           const route1 = TestRoutes.static1.parseUrl("/static1?page=3&search=%5Bone%2Ctwo%2Cthree%5D&size=50&other=x");
           const route2 = TestRoutes.level1.static2.parseUrl("/level1/static2?foo=true&some=hello%20world!");
           const route3 = TestRoutes.level1.level2.static3.parseUrl("/level1/level2/static3?optional=foo&other=false");
-          const route4 = TestRoutes.static1.parseUrl("/static1?search=one&page=1&search=two&search=three");
+          const route4 = TestRoutes.static1.parseUrl("/static1?search=[one,two,three]&page=1");
 
           expect(route1.queryParams).toBeEqual({ page: 3, search: ["one", "two", "three"], size: 50 });
           expect(route2.queryParams).toBeEqual({ some: "hello world!" });
