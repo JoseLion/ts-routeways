@@ -1,11 +1,10 @@
-import dedent from "@cometlib/dedent";
 import { match } from "ts-pattern";
 
 import { CodecDecodeError } from "./errors/CodecDecodeError";
 import { CodecEncodeError } from "./errors/CodecEncodeError";
 import { isValidDate } from "./helpers/commons";
 
-interface ArrayCodecOptions {
+export interface ArrayCodecOptions {
   /**
    * The delimeter character used on the `delimited` format.
    *
@@ -29,8 +28,14 @@ interface ArrayCodecOptions {
   format?: "json" | "delimited" | "repeat-key" | "key-square-brackets";
 }
 
-interface DecodeQuery {
+export interface DecodeQuery {
+  /**
+   * The key name of the query parameter under decode.
+   */
   key: string;
+  /**
+   * The raw search string of the URL under decode.
+   */
   search: string;
 }
 
@@ -40,7 +45,7 @@ export interface Codec<T> {
    * provided when decoding query parameters.
    *
    * @param text the string to decode into a value
-   * @param search the raw search string
+   * @param query an object with information about the query parameters
    * @returns the decoded value
    */
   decode(text: string, query?: DecodeQuery): T;
@@ -247,7 +252,7 @@ export const Codecs: Readonly<CodecsType> = {
 
     return {
       decode: (text, query) => {
-        if (text === "") {
+        if (text === "" && query === undefined) {
           return [];
         }
 
@@ -259,10 +264,7 @@ export const Codecs: Readonly<CodecsType> = {
               return normalized.split(",").map(value => codec.decode(value));
             }
 
-            throw new CodecDecodeError(dedent`
-              Array values must be either an empty string (for empty arrays) or be \
-              surrounded by square brackets "[...]". Got "${text}" instead
-            `);
+            throw new CodecDecodeError("Invalid array format! Expected values to be on square brackets");
           })
           .with("key-square-brackets", () => {
             if (query !== undefined) {

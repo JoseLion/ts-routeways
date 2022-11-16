@@ -1,8 +1,14 @@
 import { RoutewaysBuilder } from "./lib/Routeways";
 
-export { Routeway } from "./lib/Routeways";
-export { PathLike, InferQueryParams } from "./lib/commons.types";
-export { Codec, CodecsType, Codecs, addCodec } from "./lib/Codecs";
+export {
+  addCodec,
+  ArrayCodecOptions,
+  Codec,
+  Codecs,
+  CodecsType,
+  DecodeQuery,
+} from "./lib/Codecs";
+export { InferQueryParams, PathLike } from "./lib/commons.types";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
 export {
@@ -12,6 +18,7 @@ export {
   makeQueryParamHook,
   makeRouteParamsHook,
 } from "./lib/react/hookMakers";
+export { Routeway } from "./lib/Routeways";
 
 /**
  * Creates a `Routeways` builder instance. Use this instance to start defining

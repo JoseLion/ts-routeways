@@ -4682,7 +4682,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ts-routeways@workspace:."
   dependencies:
-    "@cometlib/dedent": ^0.8.0-es.10
     "@stackbuilders/assertive-ts": ^1.2.0
     "@types/mocha": ^10.0.0
     "@types/node": ^18.11.9

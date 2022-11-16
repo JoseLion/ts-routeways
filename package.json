@@ -33,7 +33,6 @@
     "test": "NODE_ENV=test mocha \"test/**/*.test.ts?(x)\""
   },
   "dependencies": {
-    "@cometlib/dedent": "^0.8.0-es.10",
     "ts-pattern": "^4.0.6"
   },
   "devDependencies": {
