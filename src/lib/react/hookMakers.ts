@@ -22,13 +22,42 @@ type RouteParamsHook = <V extends ParamsConfig, Q extends ParamsConfig>(route: R
 
 type PathVarsHook = <V extends ParamsConfig>(route: Routeway<PathLike, V>) => CodecToPathVars<V>;
 
-type QueryParamHook = <
-  Q extends ParamsConfig,
-  K extends keyof CodecToQueryParams<Q>
->(route: Routeway<PathLike, ParamsConfig, Q>, key: K) => [
-  CodecToQueryParams<Q>[K],
-  Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>
-];
+interface QueryParamHook {
+  /**
+   * Make a state out of the query parameters of an specific route. The codecs
+   * in that route are used to encode/decode the query string. Changing the
+   * state of the query param updates the query string in the current path.
+   *
+   * @param route the route to use for the query params
+   * @param key the key of the specific query param
+   * @returns a React state and dispatcher tuple of the query param
+   */
+  <Q extends ParamsConfig, K extends keyof CodecToQueryParams<Q>>(
+    route: Routeway<PathLike,
+    ParamsConfig, Q>, key: K,
+  ): [
+    CodecToQueryParams<Q>[K],
+    Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>
+  ];
+  /**
+   * Make a state out of the query parameters of an specific route. The codecs
+   * in that route are used to encode/decode the query string. Changing the
+   * state of the query param updates the query string in the current path.
+   *
+   * @param route the route to use for the query params
+   * @param key the key of the specific query param
+   * @param fallback a value to fall back if the query param is `undefined`
+   * @returns a React state and dispatcher tuple of the query param
+   */
+  <Q extends ParamsConfig, K extends keyof CodecToQueryParams<Q>>(
+    route: Routeway<PathLike, ParamsConfig, Q>,
+    key: K,
+    fallback: NonNullable<CodecToQueryParams<Q>[K]>,
+  ): [
+    NonNullable<CodecToQueryParams<Q>[K]>,
+    Dispatch<SetStateAction<NonNullable<CodecToQueryParams<Q>[K]>>>
+  ];
+}
 
 type AllQueryParamsHook = <Q extends ParamsConfig>(route: Routeway<PathLike, ParamsConfig, Q>) => {
   queryParams: CodecToQueryParams<Q>,
@@ -165,24 +194,30 @@ export function makePathVarsHook(getLocation: () => LocationLike): PathVarsHook 
  * @returns a hook to manage a query parameter of a route
  */
 export function makeQueryParamHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): QueryParamHook {
-  return (route, key) => {
+  return ((route, key, fallback) => {
     const navigateFn = getNavigate();
     const { hash, pathname, search } = getLocation();
 
-    const [queryParam, setQueryParam] = useState(() => route.parseUrl(pathname.concat(hash, search)).queryParams[key]);
+    const [queryParam, setQueryParam] = useState(() => {
+      const url = pathname.concat(hash, search);
+      const param = route.parseUrl(url).queryParams[key];
+
+      return param ?? fallback;
+    });
 
     useEffect(() => {
       const { pathVars, queryParams } = route.parseUrl(pathname.concat(hash, search));
-
-      navigateFn(route.makeUrl({
+      const url = route.makeUrl({
         ...pathVars,
         ...queryParams,
         [key]: queryParam,
-      }));
+      });
+
+      navigateFn(url);
     }, [queryParam]);
 
     return [queryParam, setQueryParam];
-  };
+  }) as QueryParamHook;
 }
 
 /**

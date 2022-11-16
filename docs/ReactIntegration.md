@@ -121,10 +121,14 @@ useEffect(() => {
 
 ### makeQueryParamHook
 
-Creates a hook that expects a `Routeways` route and the key of one of the possible query parameters of that route. Then it returns a React state of that query parameter. Whenever the state of the parameter is changed, navigation is executed to change the query parameter in the source too.
+Creates a hook that expects a `Routeways` route and the key of one of the possible query parameters of that route. Then it returns a React state of that query parameter. Whenever the state of the parameter is changed, navigation is executed to change the query parameter in the source too. You can pass a third paramater to add a fallback in case the parameter is `undefined`. When a fallback value is used, the state type not a union of `undefined` anymore.
 
 ```tsx
 const [byName, setByName] = useQueryParam(MainRoutes.users.search, "byName");
+//     ^ type = string | undefined
+
+const [showAll, setShowAll] = useQueryParam(MainRoutes.users.search, "showAll", false);
+//     ^ type = boolean
 
 // ...
 
