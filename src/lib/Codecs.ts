@@ -1,22 +1,68 @@
-import dedent from "@cometlib/dedent";
+import { match } from "ts-pattern";
 
 import { CodecDecodeError } from "./errors/CodecDecodeError";
 import { CodecEncodeError } from "./errors/CodecEncodeError";
 import { isValidDate } from "./helpers/commons";
 
+export interface ArrayCodecOptions {
+  /**
+   * The delimeter character used on the `delimited` format.
+   *
+   * @default ","
+   */
+  delimiter?: string;
+  /**
+   * The format in which the query param array is enconded/decoded. If used on
+   * path variables, it only supports the `json` and `csv` formats.
+   *
+   * The available formats are:
+   * - **json:** `?arr=[foo,bar,baz]`
+   * - **delimited:** `?arr=foo,bar,baz` (the delimiter char can be changed)
+   * - **repeat-key:** `?arr=foo&arr=bar&arr=baz`
+   * - **key-square-brackets:** `?arr[]=foo&arr[]=bar&arr[]=baz`
+   *
+   * **Note:** An empty string (`?arr=`) means an empty array on any format.
+   *
+   * @default "json"
+   */
+  format?: "json" | "delimited" | "repeat-key" | "key-square-brackets";
+}
+
+export interface DecodeQuery {
+  /**
+   * The key name of the query parameter under decode.
+   */
+  key: string;
+  /**
+   * The raw search string of the URL under decode.
+   */
+  search: string;
+}
+
 export interface Codec<T> {
   /**
-   * Decodes a string into a value of type `T`.
+   * Decodes a string into a value of type `T`. The second argument is only
+   * provided when decoding query parameters.
    *
    * @param text the string to decode into a value
+   * @param query an object with information about the query parameters
+   * @returns the decoded value
    */
-  decode(text: string): T;
+  decode(text: string, query?: DecodeQuery): T;
   /**
-   * Encodes a value of type `T` into a string.
+   * Encodes a value of type `T` into a string. The second argument is only
+   * provided when decoding query parameters.
+   *
+   * For query params, you can return either a single value or the raw seach
+   * string for the key being encoded. If the key is found in the result
+   * followed by a `=` symbol, the whole search string will be used instead of
+   * just the value.
    *
    * @param value the value to encode as a string
+   * @param key the key of the query parameter
+   * @returns the encoded string or search string
    */
-  encode(value: T): string;
+  encode(value: T, key?: string): string;
 }
 
 export interface CodecsType {
@@ -47,8 +93,9 @@ export interface CodecsType {
    * ```
    *
    * @param codec the codec for the array's inner type
+   * @param options an object of option to configure the codec
    */
-  array<T>(codec: Codec<T>): Codec<T[]>;
+  array<T>(codec: Codec<T>, options?: ArrayCodecOptions): Codec<T[]>;
   /**
    * Creates a codec for a specific set of numbers as literals.
    *
@@ -199,29 +246,62 @@ export const Codecs: Readonly<CodecsType> = {
       throw new CodecEncodeError(`Unable to encode "${value}". A string value was expected`);
     },
   },
-  array(codec) {
+  array(codec, options = { }) {
+    const { delimiter = ",", format = "json" } = options;
+    const unsupported = new CodecDecodeError(`The "${format}" format is only supported on query paramaters`);
+
     return {
-      decode: text => {
-        if (text === "") {
+      decode: (text, query) => {
+        if (text === "" && query === undefined) {
           return [];
         }
 
-        if (text.startsWith("[") && text.endsWith("]")) {
-          const normalized = text.slice(1, text.length - 1);
+        return match(format)
+          .with("delimited", () => text.split(delimiter).map(value => codec.decode(value)))
+          .with("json", () => {
+            if (text.startsWith("[") && text.endsWith("]")) {
+              const normalized = text.slice(1, text.length - 1);
+              return normalized.split(",").map(value => codec.decode(value));
+            }
 
-          return normalized.split(",").map(codec.decode);
-        }
+            throw new CodecDecodeError("Invalid array format! Expected values to be on square brackets");
+          })
+          .with("key-square-brackets", () => {
+            if (query !== undefined) {
+              const url = new URL(`http://localhost${query.search}`);
+              return url.searchParams
+                .getAll(`${query.key}[]`)
+                .map(value => codec.decode(value));
+            }
 
-        throw new CodecDecodeError(dedent`
-          Array values must be either an empty string (for empty arrays) or be \
-          surrounded by square brackets "[...]". Got "${text}" instead
-        `);
+            throw unsupported;
+          })
+          .with("repeat-key", () => {
+            if (query !== undefined) {
+              const url = new URL(`http://localhost${query.search}`);
+              return url.searchParams
+                .getAll(query.key)
+                .map(value => codec.decode(value));
+            }
+
+            throw unsupported;
+          })
+          .exhaustive();
       },
-      encode: value => {
+      encode: (value, key) => {
         if (Array.isArray(value)) {
-          return value.length
-            ? `[${value.map(codec.encode).join(",")}]`
-            : "";
+          if (value.length === 0) {
+            return "";
+          }
+
+          const array = value.map(val => codec.encode(val));
+
+          return match(format)
+            .with("delimited", () => array.join(delimiter))
+            .with("json", () => `[${array.join(",")}]`)
+            .with("key-square-brackets", () => array.map(val => `${key}[]=${val}`).join("&"))
+            .with("repeat-key", () => array.map(val => `${key}=${val}`).join("&"))
+            .exhaustive();
         }
 
         throw new CodecEncodeError(`Unable to encode "${value}". An array value was expected`);

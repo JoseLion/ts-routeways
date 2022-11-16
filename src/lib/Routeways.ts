@@ -277,10 +277,12 @@ function injectParentData<
             const paramValue = params?.[key];
 
             if (codec && paramValue !== undefined) {
-              const encodedValue = codec.encode(paramValue);
+              const encodedValue = codec.encode(paramValue, key);
               const joinChar: string = search === "?" ? "" : "&";
 
-              return `${search}${joinChar}${key}=${encodeURIComponent(encodedValue)}`;
+              return encodedValue.includes(`${key}=`)
+                ? `${search}${joinChar}${encodeURI(encodedValue)}`
+                : `${search}${joinChar}${key}=${encodeURIComponent(encodedValue)}`;
             }
 
             return search;
@@ -314,16 +316,13 @@ function injectParentData<
               queryParams: safeKeys(routeConfig.queryParams)
                 .reduce((params, key) => {
                   const codec = routeConfig.queryParams[key];
-                  const [head, ...rest] = url.searchParams.getAll(`${key}`);
+                  const first = url.searchParams.get(`${key}`);
+                  const { search } = url;
 
-                  if (head && codec) {
+                  if (first && codec) {
                     return {
                       ...params,
-                      [key]: codec.decode(
-                        rest.length > 0
-                          ? `[${[head, ...rest].join(",")}]`
-                          : head,
-                      ),
+                      [key]: codec.decode(first, { key, search }),
                     };
                   }
 
