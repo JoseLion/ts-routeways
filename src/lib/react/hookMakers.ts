@@ -23,6 +23,15 @@ type RouteParamsHook = <V extends ParamsConfig, Q extends ParamsConfig>(route: R
 type PathVarsHook = <V extends ParamsConfig>(route: Routeway<PathLike, V>) => CodecToPathVars<V>;
 
 interface QueryParamHook {
+  /**
+   * Make a state out of the query parameters of an specific route. The codecs
+   * in that route are used to encode/decode the query string. Changing the
+   * state of the query param updates the query string in the current path.
+   *
+   * @param route the route to use for the query params
+   * @param key the key of the specific query param
+   * @returns a React state and dispatcher tuple of the query param
+   */
   <Q extends ParamsConfig, K extends keyof CodecToQueryParams<Q>>(
     route: Routeway<PathLike,
     ParamsConfig, Q>, key: K,
@@ -30,6 +39,16 @@ interface QueryParamHook {
     CodecToQueryParams<Q>[K],
     Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>
   ];
+  /**
+   * Make a state out of the query parameters of an specific route. The codecs
+   * in that route are used to encode/decode the query string. Changing the
+   * state of the query param updates the query string in the current path.
+   *
+   * @param route the route to use for the query params
+   * @param key the key of the specific query param
+   * @param fallback a value to fall back if the query param is `undefined`
+   * @returns a React state and dispatcher tuple of the query param
+   */
   <Q extends ParamsConfig, K extends keyof CodecToQueryParams<Q>>(
     route: Routeway<PathLike, ParamsConfig, Q>,
     key: K,
@@ -39,14 +58,6 @@ interface QueryParamHook {
     Dispatch<SetStateAction<NonNullable<CodecToQueryParams<Q>[K]>>>
   ];
 }
-
-// type QueryParamHook = <
-//   Q extends ParamsConfig,
-//   K extends keyof CodecToQueryParams<Q>
-// >(route: Routeway<PathLike, ParamsConfig, Q>, key: K) => [
-//   CodecToQueryParams<Q>[K],
-//   Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>
-// ];
 
 type AllQueryParamsHook = <Q extends ParamsConfig>(route: Routeway<PathLike, ParamsConfig, Q>) => {
   queryParams: CodecToQueryParams<Q>,
