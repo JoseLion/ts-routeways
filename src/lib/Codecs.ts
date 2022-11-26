@@ -97,20 +97,6 @@ export interface CodecsType {
    */
   array<T>(codec: Codec<T>, options?: ArrayCodecOptions): Codec<T[]>;
   /**
-   * Creates a codec for a specific set of numbers as literals.
-   *
-   * @example
-   * ```
-   * type Weekdays = 1 | 2 | 3 | 4 | 5 | 6 | 7;
-   *
-   * Codecs.numberLiteral<Weekdays>(1, 2, 3, 4, 5, 6, 7); // Constraints the values to `Weekdays`
-   *
-   * Codes.numberLiteral(2, 4, 6, 8, 10); // Infers the type from the provided values
-   * ```
-   * @param literals the number literal for the specific codec
-   */
-  numberLiteral<T extends number>(...literals: T[]): Codec<T>;
-  /**
    * Transforms the provided codec into a nullable codec. That is to say, it
    * can now encode/decode both the provided codec type and `null`.
    *
@@ -126,7 +112,7 @@ export interface CodecsType {
    *
    * @param codec the codec to make nullable
    */
-  null<T>(codec: Codec<T>): Codec<T | null>;
+   null<T>(codec: Codec<T>): Codec<T | null>;
   /**
    * Transforms the provided codec into a nullish codec. That is to say, it can
    * now encode/decode both the provided codec type, `null`, and `undefined`.
@@ -146,23 +132,41 @@ export interface CodecsType {
    */
   nullish<T>(codec: Codec<T>): Codec<T | null | undefined>;
   /**
+   * Creates a codec for a specific set of numbers as literals.
+   *
+   * @example
+   * ```
+   * type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+   *
+   * // Constraints the values to `Weekdays`
+   * Codecs.numberLiteral<Weekday>(1, 2, 3, 4, 5, 6, 7);
+   *
+   * // Infers the type from the provided values
+   * Codes.numberLiteral(2, 4, 6, 8, 10);
+   * ```
+   * @param literals the number literal for the specific codec
+   */
+  numberLiteral<T extends number>(...literals: T[]): Codec<T>;
+  /**
    * Creates a codec for a specific set of string as literals.
    *
    * @example
    * ```
    * type Fruit = "apple" | "grape" | "melon";
    *
-   * Codecs.stringLiteral<Fruit>("apple", "grape", "melon"); // Constraints the values to `Fruit`
+   * // Constraints the values to `Fruit`
+   * Codecs.stringLiteral<Fruit>("apple", "grape", "melon");
    *
-   * Codecs.stringLiteral("Jan", "Feb", "Mar", "Apr"); Infers the type from the provided values
+   * // Infers the type from the provided values
+   * Codecs.stringLiteral("Jan", "Feb", "Mar", "Apr");
    * ```
    *
    * @param literals the string literals for the specific codec
    */
   stringLiteral<T extends string>(...literals: T[]): Codec<T>;
   /**
-   * Transforms the provided codec into an undefined codec. That is to say, it can
-   * now encode/decode both the provided codec type and `undefined`.
+   * Transforms the provided codec into an undefined codec. That is to say, it
+   * can now encode/decode both the provided codec type and `undefined`.
    *
    * **Note:** `undefined` is encoded to literally an "undefined" string. This
    * can be ambiguious when used with the {@link Codecs.String String Codec},
@@ -308,6 +312,15 @@ export const Codecs: Readonly<CodecsType> = {
       },
     };
   },
+  null(codec) {
+    return {
+      decode: text => text === "null" ? null : codec.decode(text),
+      encode: value => value === null ? "null" : codec.encode(value),
+    };
+  },
+  nullish(codec) {
+    return this.null(this.undefined(codec));
+  },
   numberLiteral(...literals) {
     return {
       decode: text => {
@@ -327,18 +340,11 @@ export const Codecs: Readonly<CodecsType> = {
           return this.Number.encode(value);
         }
 
-        throw new CodecEncodeError(`Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`);
+        throw new CodecEncodeError(
+          `Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`
+        );
       },
     };
-  },
-  null(codec) {
-    return {
-      decode: text => text === "null" ? null : codec.decode(text),
-      encode: value => value === null ? "null" : codec.encode(value),
-    };
-  },
-  nullish(codec) {
-    return this.null(this.undefined(codec));
   },
   stringLiteral(...literals) {
     return {
@@ -358,7 +364,9 @@ export const Codecs: Readonly<CodecsType> = {
           return value;
         }
 
-        throw new CodecEncodeError(`Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`);
+        throw new CodecEncodeError(
+          `Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`
+        );
       },
     };
   },

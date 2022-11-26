@@ -11,7 +11,7 @@ import { safeKeys } from "../helpers/commons";
 import { Routeway } from "../Routeways";
 
 type PathVarsNavConfig<V extends ParamsConfig, Q extends ParamsConfig> = RouteParams<V, Q> & {
-  replace?: boolean,
+  replace?: boolean;
 };
 
 type RouteParamsHook = <V extends ParamsConfig, Q extends ParamsConfig>(route: Routeway<PathLike, V, Q>) => {
@@ -37,7 +37,7 @@ interface QueryParamHook {
     ParamsConfig, Q>, key: K,
   ): [
     CodecToQueryParams<Q>[K],
-    Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>
+    Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>,
   ];
   /**
    * Make a state out of the query parameters of an specific route. The codecs
@@ -55,12 +55,12 @@ interface QueryParamHook {
     fallback: NonNullable<CodecToQueryParams<Q>[K]>,
   ): [
     NonNullable<CodecToQueryParams<Q>[K]>,
-    Dispatch<SetStateAction<NonNullable<CodecToQueryParams<Q>[K]>>>
+    Dispatch<SetStateAction<NonNullable<CodecToQueryParams<Q>[K]>>>,
   ];
 }
 
 type AllQueryParamsHook = <Q extends ParamsConfig>(route: Routeway<PathLike, ParamsConfig, Q>) => {
-  queryParams: CodecToQueryParams<Q>,
+  queryParams: CodecToQueryParams<Q>;
   setQueryParams: Dispatch<SetStateAction<CodecToQueryParams<Q>>>;
 };
 
@@ -89,7 +89,7 @@ type NavigateMethods<V extends ParamsConfig, Q extends ParamsConfig> =
 
 type NavigatorHook<T extends Record<string, Routeway>> =
   T extends Record<string, Routeway>
-    ? { [K in keyof T]: T[K] extends Routeway<any, infer V, infer Q, infer S>
+    ? { [K in keyof T]: T[K] extends Routeway<PathLike, infer V, infer Q, infer S>
           ? keyof S extends never
             ? NavigateMethods<V, Q>
             : NavigatorHook<S> & NavigateMethods<V, Q>

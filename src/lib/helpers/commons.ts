@@ -1,5 +1,7 @@
-export function safeKeys<K extends keyof any>(obj: Record<K, unknown>): Array<K> {
-  return Object.keys(obj) as Array<K>;
+export function safeKeys<T extends object>(obj: T): Extract<keyof T, string>[] {
+  const keys = Object.keys(obj).filter(key => key in obj);
+
+  return keys as Extract<keyof T, string>[];
 }
 
 export function mapValues<T extends object>(obj: T, mapper: <K extends keyof T>(value: T[K], key: K) => T[K]): T {

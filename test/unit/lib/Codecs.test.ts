@@ -1,14 +1,19 @@
 import { expect } from "@stackbuilders/assertive-ts";
 import { TypeFactories } from "@stackbuilders/assertive-ts/dist/lib/helpers/TypeFactories";
 
-import { addCodec, Codec, Codecs } from "../../../src/lib/Codecs";
+import { addCodec, Codec, Codecs, CodecsType } from "../../../src/lib/Codecs";
 import { CodecDecodeError } from "../../../src/lib/errors/CodecDecodeError";
 import { CodecEncodeError } from "../../../src/lib/errors/CodecEncodeError";
+
+interface CodecsWithFoo extends CodecsType {
+  Foo: Codec<"foo">;
+  makeFoo: () => Codec<"foo">;
+}
 
 type ArrayVariant = [string, Codec<string | number>, string, Array<string | number>];
 
 describe("[Unit] Codecs.test.ts", () => {
-  describe("#Boolean" , () => {
+  describe("#Boolean", () => {
     const variants = [
       ["true", true],
       ["false", false],
@@ -47,7 +52,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not a boolean", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.Boolean.encode("some" as any))
+          expect(() => Codecs.Boolean.encode("some" as unknown as boolean))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "some". A boolean value was expected');
         });
@@ -93,7 +98,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not a date", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.Date.encode("some" as any))
+          expect(() => Codecs.Date.encode("some" as unknown as Date))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "some". A Date instance was expected');
         });
@@ -151,7 +156,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not a number", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.Number.encode("some" as any))
+          expect(() => Codecs.Number.encode("some" as unknown as number))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "some". A number value was expected');
         });
@@ -179,7 +184,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not a string", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.String.encode({ foo: 1 } as any))
+          expect(() => Codecs.String.encode({ foo: 1 } as unknown as string))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "[object Object]". A string value was expected');
         });
@@ -252,7 +257,7 @@ describe("[Unit] Codecs.test.ts", () => {
         context("and the delimiter is changed", () => {
           it("returns the decoded array based on the new delimter", () => {
             const text = "true_false_true_false";
-            const decoded = Codecs.array(Codecs.Boolean, { format: "delimited", delimiter: "_" }).decode(text);
+            const decoded = Codecs.array(Codecs.Boolean, { delimiter: "_", format: "delimited" }).decode(text);
 
             expect(decoded).toBeEqual([true, false, true, false]);
           });
@@ -314,7 +319,7 @@ describe("[Unit] Codecs.test.ts", () => {
           context("and the delimiter is changed", () => {
             it("returns the decoded array based on the new delimter", () => {
               const array = [true, false, true, false];
-              const encoded = Codecs.array(Codecs.Boolean, { format: "delimited", delimiter: "_" }).encode(array);
+              const encoded = Codecs.array(Codecs.Boolean, { delimiter: "_", format: "delimited" }).encode(array);
 
               expect(encoded).toBeEqual("true_false_true_false");
             });
@@ -344,7 +349,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not an array", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.array(Codecs.Number).encode({ } as any))
+          expect(() => Codecs.array(Codecs.Number).encode({ } as unknown as number[]))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "[object Object]". An array value was expected');
         });
@@ -392,7 +397,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not one of the codec literals", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.numberLiteral(1, 2, 3).encode(5 as any))
+          expect(() => Codecs.numberLiteral(1, 2, 3).encode(5 as unknown as 1))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "5". A literal value of "[1, 2, 3]" was expected');
         });
@@ -446,7 +451,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not valid for the inner codec", () => {
         it("throws the inner CodecEncodeError", () => {
-          expect(() => Codecs.null(Codecs.Boolean).encode("foo" as any))
+          expect(() => Codecs.null(Codecs.Boolean).encode("foo" as unknown as boolean))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "foo". A boolean value was expected');
         });
@@ -516,7 +521,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not valid for the inner codec", () => {
         it("throws the inner CodecEncodeError", () => {
-          expect(() => Codecs.nullish(Codecs.Boolean).encode("foo" as any))
+          expect(() => Codecs.nullish(Codecs.Boolean).encode("foo" as unknown as boolean))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "foo". A boolean value was expected');
         });
@@ -554,7 +559,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not one of the codec literals", () => {
         it("throws a CodecEncodeError", () => {
-          expect(() => Codecs.stringLiteral("foo", "bar", "baz").encode("fizz" as any))
+          expect(() => Codecs.stringLiteral("foo", "bar", "baz").encode("fizz" as unknown as "foo"))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "fizz". A literal value of "[foo, bar, baz]" was expected');
         });
@@ -608,7 +613,7 @@ describe("[Unit] Codecs.test.ts", () => {
 
       context("when the value is not valid for the inner codec", () => {
         it("throws the inner CodecEncodeError", () => {
-          expect(() => Codecs.undefined(Codecs.Boolean).encode("foo" as any))
+          expect(() => Codecs.undefined(Codecs.Boolean).encode("foo" as unknown as boolean))
             .toThrowError(CodecEncodeError)
             .toHaveMessage('Unable to encode "foo". A boolean value was expected');
         });
@@ -619,18 +624,18 @@ describe("[Unit] Codecs.test.ts", () => {
   describe(".addCodec", () => {
     it("adds the codec with it's name to the Codec object", () => {
       const codec: Codec<"foo"> = {
-        decode: _text => "foo",
-        encode: _value => "foo",
+        decode: () => "foo",
+        encode: () => "foo",
       };
-      const makeFoo = (_arg1: number, _arg2: boolean) => codec;
+      const makeFoo = (): Codec<"foo"> => codec;
 
       addCodec("Foo", codec);
       addCodec("makeFoo", makeFoo);
 
-      expect((Codecs as any).Foo)
+      expect((Codecs as CodecsWithFoo).Foo)
         .asType(TypeFactories.object<Codec<"foo">>())
         .toBeEqual(codec);
-      expect((Codecs as any).makeFoo)
+      expect((Codecs as CodecsWithFoo).makeFoo)
         .asType(TypeFactories.Function)
         .toBeEqual(makeFoo);
     });

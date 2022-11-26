@@ -1,5 +1,5 @@
-import { Codec } from "./Codecs";
 import {
+  AnyCodec,
   CodecToPathVars,
   CodecToQueryParams,
   ParamsConfig,
@@ -21,7 +21,7 @@ type PathVarsCapture<P extends PathLike> =
 type PathVars<P extends PathLike> =
   PathVarsCapture<P> extends never
     ? Record<never, never>
-    : Record<PathVarsCapture<P>, Codec<any>>;
+    : Record<PathVarsCapture<P>, AnyCodec>;
 
 type MakeUrl<V extends ParamsConfig, Q extends ParamsConfig> =
   keyof V extends never
@@ -58,7 +58,8 @@ export type Routeway<
   $config(): {
     /**
      * A record of the path variables configuration. The key refers to the name
-     * of the path variable and the value is the specific codec for the variable.
+     * of the path variable and the value is the specific codec for the
+     * variable.
      */
     pathVars: V;
     /**
@@ -97,16 +98,28 @@ export type Routeway<
   template(): string;
 } & S;
 
-type MakeSubRoutes<B extends RoutewaysBuilder<any>, V extends ParamsConfig> =
+type DefinedSubRoutes<B extends RoutewaysBuilder<Record<string, Routeway>>> =
   B extends RoutewaysBuilder<infer M>
     ? M extends Record<string, Routeway>
-      ? { [K in keyof M]: RecurseSubRoute<M[K], V>; }
+      ? { [K in keyof M]: GetDefinedRoute<M[K]> }
       : never
     : never;
 
-type RecurseSubRoute<S extends Routeway, V extends ParamsConfig> =
+type GetDefinedRoute<S extends Routeway> =
+  S extends Routeway<infer P, infer V, infer Q, infer SR>
+    ? Routeway<P, V, Q, { [K in keyof SR]: GetDefinedRoute<SR[K]> }>
+    : never;
+
+type ResultSubRoutes<B extends RoutewaysBuilder<Record<string, Routeway>>, V extends ParamsConfig> =
+  B extends RoutewaysBuilder<infer M>
+    ? M extends Record<string, Routeway>
+      ? { [K in keyof M]: GetResultRoute<M[K], V>; }
+      : never
+    : never;
+
+type GetResultRoute<S extends Routeway, V extends ParamsConfig> =
   S extends Routeway<infer G, infer PV, infer Q, infer SR>
-    ? Routeway<G, V & PV, Q, { [K in keyof SR]: RecurseSubRoute<SR[K], V & PV>; }>
+    ? Routeway<G, V & PV, Q, { [K in keyof SR]: GetResultRoute<SR[K], V & PV>; }>
     : never;
 
 type PathConfig<
@@ -116,17 +129,17 @@ type PathConfig<
   Q extends ParamsConfig,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; }
-      : { name: N; path: P; queryParams?: Q; pathVars: V; };
+      : { name: N; path: P; pathVars: V; queryParams?: Q; };
 
 type NestConfig<
   N extends string,
   P extends PathLike,
   V extends PathVars<P>,
   Q extends ParamsConfig,
-  S extends RoutewaysBuilder<any>,
+  S extends RoutewaysBuilder<Record<string, Routeway>>,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; subRoutes: S; }
-      : { name: N; path: P; queryParams?: Q; pathVars: V; subRoutes: S; };
+      : { name: N; path: P; pathVars: V; queryParams?: Q; subRoutes: S; };
 
 /**
  * The Routeways builder API.
@@ -135,7 +148,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
 
   private readonly routes: M;
 
-  constructor(routes: M) {
+  public constructor(routes: M) {
     this.routes = routes;
 
     this.path = this.path.bind(this);
@@ -199,16 +212,16 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     P extends PathLike,
     V extends PathVars<P>,
     Q extends ParamsConfig,
-    S extends RoutewaysBuilder<any>,
+    S extends RoutewaysBuilder<DefinedSubRoutes<S>>,
   >(
     config: NestConfig<N, P, V, Q, S>,
-  ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, MakeSubRoutes<S, V>> }> {
+  ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, ResultSubRoutes<S, V>> }> {
     const { name, path, pathVars, queryParams = { } as Q, subRoutes } = "pathVars" in config
       ? config
       : { ...config, pathVars: { } as V };
-    const subRouteRecord = subRoutes.routes as MakeSubRoutes<S, V>;
+    const subRouteRecord = subRoutes.routes as ResultSubRoutes<S, V>;
 
-    const newRoute: Routeway<P, V, Q, MakeSubRoutes<S, V>> = {
+    const newRoute: Routeway<P, V, Q, ResultSubRoutes<S, V>> = {
       $config: () => ({
         pathVars,
         queryParams,
@@ -247,10 +260,11 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
 function injectParentData<
   V extends ParamsConfig,
   Q extends ParamsConfig,
-  R extends Routeway<any, V, Q, Record<string, Routeway<any, any, any, any>>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  R extends Routeway<PathLike, V, Q, Record<string, Routeway<PathLike, ParamsConfig, ParamsConfig, any>>>,
 >(
   route: R,
-  path: string = "",
+  path = "",
   pathVars: V = { } as V,
 ): R {
   return safeKeys(route)
@@ -262,15 +276,12 @@ function injectParentData<
 
       return {
         ...acc,
-        [routeName]: typeof routeProp !== "function"
-          ? injectParentData(routeProp, fullPath, allPathVars)
-          : routeProp,
         $config: () => ({
           ...routeConfig,
           pathVars: allPathVars,
         }),
         makeUrl: (params?: RouteParams<V, Q>): string => {
-          const paramKeys = safeKeys(params ?? { });
+          const paramKeys = safeKeys(params ?? { } as RouteParams<V, Q>);
           const queryKeys = paramKeys.filter(key => key in routeConfig.queryParams);
           const queryParams = queryKeys.reduce<string>((search, key) => {
             const codec = routeConfig.queryParams[key];
@@ -311,7 +322,7 @@ function injectParentData<
                 const templateIndex = templateChunks.indexOf(`:${String(key)}`);
                 const pathVar = pathnameChunks[templateIndex]!;
 
-                return codec.decode(pathVar);
+                return codec.decode(pathVar) as V[typeof key];
               }),
               queryParams: safeKeys(routeConfig.queryParams)
                 .reduce((params, key) => {
@@ -322,7 +333,7 @@ function injectParentData<
                   if (first && codec) {
                     return {
                       ...params,
-                      [key]: codec.decode(first, { key, search }),
+                      [key]: codec.decode(first, { key, search }) as Q[typeof key],
                     };
                   }
 
@@ -333,6 +344,9 @@ function injectParentData<
 
           throw new UrlParserError(`Unable to parse "${uri}". The url does not match the template "${fullPath}"`);
         },
+        [routeName]: typeof routeProp !== "function"
+          ? injectParentData(routeProp, fullPath, allPathVars)
+          : routeProp,
         template: () => fullPath,
       };
     }, { } as R);
