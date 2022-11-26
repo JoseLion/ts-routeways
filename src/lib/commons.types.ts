@@ -3,15 +3,18 @@ import { Routeway } from "./Routeways";
 
 export type PathLike = `/${string}`;
 
-export type ParamsConfig = Record<string, Codec<any>>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyCodec = Codec<any>;
+
+export type ParamsConfig = Record<string, AnyCodec>;
 
 export type CodecToPathVars<V extends ParamsConfig> =
-  V extends Record<infer N, Codec<any>>
+  V extends Record<infer N, AnyCodec>
     ? { [K in N]: V[K] extends Codec<infer T> ? T : never; }
     : never;
 
 export type CodecToQueryParams<Q extends ParamsConfig> =
-  Q extends Record<infer N, Codec<any>>
+  Q extends Record<infer N, AnyCodec>
     ? { [K in N]?: Q[K] extends Codec<infer T> ? T : never; }
     : never;
 
@@ -30,6 +33,6 @@ export type RouteParams<
  * ```
  */
 export type InferQueryParams<T extends Routeway> =
-  T extends Routeway<PathLike, ParamsConfig, infer Q, Record<any, any>>
+  T extends Routeway<PathLike, ParamsConfig, infer Q, Record<never, Routeway>>
     ? CodecToQueryParams<Q>
     : never;

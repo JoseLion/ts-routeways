@@ -185,12 +185,14 @@ describe("[Unit] SafeRouter.test.ts", () => {
           const route1 = TestRoutes.library.parseUrl("/library/3");
           const route2 = TestRoutes.library.author.parseUrl("/library/3/author/1");
           const route3 = TestRoutes.library.author.book.parseUrl("/library/3/author/1/book/7");
-          const route4 = TestRoutes.library.author.collection.tome.parseUrl("/library/3/author/2/collection/LOTR/tome/4gfd-adf5");
+          const route4 = TestRoutes.library.author.collection.tome.parseUrl(
+            "/library/3/author/2/collection/LOTR/tome/4gfd-adf5"
+          );
 
           expect(route1.pathVars).toBeEqual({ libId: 3 });
-          expect(route2.pathVars).toBeEqual({ libId: 3, authorId: 1 });
-          expect(route3.pathVars).toBeEqual({ libId: 3, authorId: 1, bookId: 7 });
-          expect(route4.pathVars).toBeEqual({ libId: 3, authorId: 2, collectionId: "LOTR", tomeId: "4gfd-adf5" });
+          expect(route2.pathVars).toBeEqual({ authorId: 1, libId: 3 });
+          expect(route3.pathVars).toBeEqual({ authorId: 1, bookId: 7, libId: 3 });
+          expect(route4.pathVars).toBeEqual({ authorId: 2, collectionId: "LOTR", libId: 3, tomeId: "4gfd-adf5" });
         });
       });
 
@@ -219,11 +221,11 @@ describe("[Unit] SafeRouter.test.ts", () => {
             queryParams: { limit: true, page: 3 },
           });
           expect(route2).toBeEqual({
-            pathVars: { libId: 1, authorId: 4 },
+            pathVars: { authorId: 4, libId: 1 },
             queryParams: { tab: "info" },
           });
           expect(route3).toBeEqual({
-            pathVars: { libId: 1, authorId: 4, bookId: 7 },
+            pathVars: { authorId: 4, bookId: 7, libId: 1 },
             queryParams: { isFree: false },
           });
         });
@@ -244,7 +246,9 @@ describe("[Unit] SafeRouter.test.ts", () => {
           const error = captureError(() => route.parseUrl(url));
 
           expect(error).toBeInstanceOf(UrlParserError);
-          expect(error.message).toBeEqual(`Unable to parse "${url}". The url does not match the template "${route.template()}"`);
+          expect(error.message).toBeEqual(
+            `Unable to parse "${url}". The url does not match the template "${route.template()}"`
+          );
         });
       });
     });

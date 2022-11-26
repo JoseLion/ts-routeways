@@ -1,4 +1,4 @@
-import { RoutewaysBuilder } from "./lib/Routeways";
+import { Routeway, RoutewaysBuilder } from "./lib/Routeways";
 
 export {
   addCodec,
@@ -27,6 +27,6 @@ export { Routeway } from "./lib/Routeways";
  *
  * @returns a `Routeways` builder instance
  */
-export function Routeways(): RoutewaysBuilder<{ }> {
+export function Routeways(): RoutewaysBuilder<Record<never, Routeway>> {
   return new RoutewaysBuilder({ });
 }
