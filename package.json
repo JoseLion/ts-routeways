@@ -44,16 +44,16 @@
     "@typescript-eslint/parser": "^5.44.0",
     "eslint": "^8.28.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.6.2",
+    "eslint-plugin-jsdoc": "^39.6.4",
     "mocha": "^10.1.0",
     "react": "^18.2.0",
     "semantic-release": "^19.0.5",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.1",
-    "typescript": "4.8.4"
+    "typescript": "4.9.3"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.3.0"
 }
