@@ -268,26 +268,22 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
 }
 
 function injectParentData<
-  V extends Record<string, unknown>,
-  Q extends Record<string, unknown>,
-  R extends Routeway<
-    PathLike,
-    V,
-    Q,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Record<string, Routeway<PathLike, Record<string, unknown>, Record<string, unknown>, any>>
-  >,
+  R extends Routeway<PathLike, V, Q, S>,
+  S extends Record<string, Routeway> = Record<never, never>,
+  V extends Record<string, unknown> = Record<never, unknown>,
+  Q extends Record<string, unknown> = Record<never, unknown>,
 >(
   route: R,
   path = "",
   pathVars: CodecsOf<V> = { } as CodecsOf<V>,
 ): R {
+  const routeConfig = route.$config();
+  const fullPath = `${path}${route.template()}`;
+  const allPathVars = { ...pathVars, ...routeConfig.pathVars };
+
   return safeKeys(route)
     .reduce((acc, routeName) => {
-      const routeConfig = route.$config();
-      const routeProp = route[routeName];
-      const fullPath = `${path}${route.template()}`;
-      const allPathVars = { ...pathVars, ...routeConfig.pathVars };
+      const subRoute = route[routeName];
 
       return {
         ...acc,
@@ -299,7 +295,6 @@ function injectParentData<
           if (params === undefined) {
             return fullPath;
           }
-
 
           const queryKeys = safeKeys(routeConfig.queryParams).filter(key => safeKeys(params).includes(key));
           const queryParams = queryKeys.reduce<string>((search, key) => {
@@ -367,9 +362,9 @@ function injectParentData<
 
           throw new UrlParserError(`Unable to parse "${uri}". The url does not match the template "${fullPath}"`);
         },
-        [routeName]: typeof routeProp !== "function"
-          ? injectParentData(routeProp, fullPath, allPathVars)
-          : routeProp,
+        [routeName]: typeof subRoute !== "function"
+          ? injectParentData(subRoute, fullPath, allPathVars)
+          : subRoute,
         template: () => fullPath,
       };
     }, { } as R);
