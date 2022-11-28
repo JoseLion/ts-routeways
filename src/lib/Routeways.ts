@@ -1,13 +1,10 @@
 import {
-  AnyCodec,
-  CodecToPathVars,
-  CodecToQueryParams,
-  ParamsConfig,
+  CodecsOf,
   PathLike,
   RouteParams,
 } from "./commons.types";
 import { UrlParserError } from "./errors/UrlParserError";
-import { mapValues, safeKeys } from "./helpers/commons";
+import { safeKeys } from "./helpers/commons";
 
 type PathVarsCapture<P extends PathLike> =
   P extends `${string}/:${infer P1}/${string}:${infer P2}`
@@ -18,12 +15,12 @@ type PathVarsCapture<P extends PathLike> =
         ? P4
         : never;
 
-type PathVars<P extends PathLike> =
+type PathVars<P extends PathLike, V extends Record<string, unknown>> =
   PathVarsCapture<P> extends never
     ? Record<never, never>
-    : Record<PathVarsCapture<P>, AnyCodec>;
+    : CodecsOf<V>;
 
-type MakeUrl<V extends ParamsConfig, Q extends ParamsConfig> =
+type MakeUrl<V extends Record<string, unknown>, Q extends Record<string, unknown>> =
   keyof V extends never
     ? {
         /**
@@ -46,8 +43,8 @@ type MakeUrl<V extends ParamsConfig, Q extends ParamsConfig> =
 
 export type Routeway<
   P extends PathLike = PathLike,
-  V extends ParamsConfig = Record<never, never>,
-  Q extends ParamsConfig = Record<never, never>,
+  V extends Record<string, unknown> = Record<never, unknown>,
+  Q extends Record<string, unknown> = Record<never, unknown>,
   S extends Record<string, Routeway> = Record<never, never>,
 > = MakeUrl<V, Q> & {
   /**
@@ -61,13 +58,13 @@ export type Routeway<
      * of the path variable and the value is the specific codec for the
      * variable.
      */
-    pathVars: V;
+    pathVars: PathVars<P, V>;
     /**
      * A record of the query parameters configuration. The key refers to the
      * name of the query parameters and the value is the specific codec for the
      * parameter.
      */
-    queryParams: Q;
+    queryParams: CodecsOf<Q>;
     /**
      * The template of this route segment. Differently from the `.template()`
      * method, this property does not contain the template of the full path,
@@ -86,8 +83,8 @@ export type Routeway<
    * @returns an object with the parsed path variables and query parameters
    */
   parseUrl(uri: string): {
-    pathVars: CodecToPathVars<V>;
-    queryParams: CodecToQueryParams<Q>;
+    pathVars: V;
+    queryParams: Partial<Q>;
   };
   /**
    * Creates the complete template of the route. Useful when working with other
@@ -110,36 +107,41 @@ type GetDefinedRoute<S extends Routeway> =
     ? Routeway<P, V, Q, { [K in keyof SR]: GetDefinedRoute<SR[K]> }>
     : never;
 
-type ResultSubRoutes<B extends RoutewaysBuilder<Record<string, Routeway>>, V extends ParamsConfig> =
+type ResultSubRoutes<B extends RoutewaysBuilder<Record<string, Routeway>>, V extends Record<string, unknown>> =
   B extends RoutewaysBuilder<infer M>
     ? M extends Record<string, Routeway>
       ? { [K in keyof M]: GetResultRoute<M[K], V>; }
       : never
     : never;
 
-type GetResultRoute<S extends Routeway, V extends ParamsConfig> =
+type GetResultRoute<S extends Routeway, V extends Record<string, unknown>> =
   S extends Routeway<infer G, infer PV, infer Q, infer SR>
-    ? Routeway<G, V & PV, Q, { [K in keyof SR]: GetResultRoute<SR[K], V & PV>; }>
+    ? Routeway<
+        G,
+        { [K in keyof (V & PV)]: (V & PV)[K]; },
+        Q,
+        { [K in keyof SR]: GetResultRoute<SR[K], { [K2 in keyof (V & PV)]: (V & PV)[K2] }>; }
+      >
     : never;
 
 type PathConfig<
   N extends string,
   P extends PathLike,
-  V extends PathVars<P>,
-  Q extends ParamsConfig,
+  V extends Record<string, unknown>,
+  Q extends Record<string, unknown>,
 > = PathVarsCapture<P> extends never
-      ? { name: N; path: P; queryParams?: Q; }
-      : { name: N; path: P; pathVars: V; queryParams?: Q; };
+      ? { name: N; path: P; queryParams?: CodecsOf<Q>; }
+      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: CodecsOf<Q>; };
 
 type NestConfig<
   N extends string,
   P extends PathLike,
-  V extends PathVars<P>,
-  Q extends ParamsConfig,
+  V extends Record<string, unknown>,
+  Q extends Record<string, unknown>,
   S extends RoutewaysBuilder<Record<string, Routeway>>,
 > = PathVarsCapture<P> extends never
-      ? { name: N; path: P; queryParams?: Q; subRoutes: S; }
-      : { name: N; path: P; pathVars: V; queryParams?: Q; subRoutes: S; };
+      ? { name: N; path: P; queryParams?: CodecsOf<Q>; subRoutes: S; }
+      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: CodecsOf<Q>; subRoutes: S; };
 
 /**
  * The Routeways builder API.
@@ -170,14 +172,14 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
   public path<
     N extends string,
     P extends PathLike,
-    V extends PathVars<P>,
-    Q extends ParamsConfig,
+    V extends Record<string, unknown> = Record<never, unknown>,
+    Q extends Record<string, unknown> = Record<never, unknown>,
   >(
     config: PathConfig<N, P, V, Q>,
   ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, V, Q>; }> {
-    const { name, path, pathVars, queryParams = { } as Q } = "pathVars" in config
+    const { name, path, pathVars, queryParams = { } as CodecsOf<Q> } = "pathVars" in config
       ? config
-      : { ...config, pathVars: { } as V };
+      : { ...config, pathVars: { } as PathVars<P, V> };
 
     return new RoutewaysBuilder({
       ...this.routes,
@@ -190,8 +192,8 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
         }),
         makeUrl: () => path,
         parseUrl: () => ({
-          pathVars: { } as CodecToPathVars<V>,
-          queryParams: { } as CodecToQueryParams<Q>,
+          pathVars: { } as V,
+          queryParams: { } as Q,
         }),
         template: () => path,
       },
@@ -210,15 +212,15 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
   public nest<
     N extends string,
     P extends PathLike,
-    V extends PathVars<P>,
-    Q extends ParamsConfig,
-    S extends RoutewaysBuilder<DefinedSubRoutes<S>>,
+    V extends Record<string, unknown> = Record<never, unknown>,
+    Q extends Record<string, unknown> = Record<never, unknown>,
+    S extends RoutewaysBuilder<DefinedSubRoutes<S>> = RoutewaysBuilder<Record<never, Routeway>>,
   >(
     config: NestConfig<N, P, V, Q, S>,
   ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, ResultSubRoutes<S, V>> }> {
-    const { name, path, pathVars, queryParams = { } as Q, subRoutes } = "pathVars" in config
+    const { name, path, pathVars, queryParams = { } as CodecsOf<Q>, subRoutes } = "pathVars" in config
       ? config
-      : { ...config, pathVars: { } as V };
+      : { ...config, pathVars: { } as PathVars<P, V> };
     const subRouteRecord = subRoutes.routes as ResultSubRoutes<S, V>;
 
     const newRoute: Routeway<P, V, Q, ResultSubRoutes<S, V>> = {
@@ -230,8 +232,8 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
       }),
       makeUrl: () => "",
       parseUrl: () => ({
-        pathVars: { } as CodecToPathVars<V>,
-        queryParams: { } as CodecToQueryParams<Q>,
+        pathVars: { } as V,
+        queryParams: { } as Q,
       }),
       template: () => path,
       ...subRouteRecord,
@@ -250,22 +252,35 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
    * @returns the built `Routeways` instance
    */
   public build(): M {
-    return mapValues(
-      this.routes,
-      route => injectParentData(route),
-    );
+    return safeKeys(this.routes).reduce((acc, key) => {
+      const route = this.routes[key];
+
+      if (route !== undefined) {
+        return {
+          ...acc,
+          [key]: injectParentData(route),
+        };
+      }
+
+      return acc;
+    }, { } as M);
   }
 }
 
 function injectParentData<
-  V extends ParamsConfig,
-  Q extends ParamsConfig,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  R extends Routeway<PathLike, V, Q, Record<string, Routeway<PathLike, ParamsConfig, ParamsConfig, any>>>,
+  V extends Record<string, unknown>,
+  Q extends Record<string, unknown>,
+  R extends Routeway<
+    PathLike,
+    V,
+    Q,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Record<string, Routeway<PathLike, Record<string, unknown>, Record<string, unknown>, any>>
+  >,
 >(
   route: R,
   path = "",
-  pathVars: V = { } as V,
+  pathVars: CodecsOf<V> = { } as CodecsOf<V>,
 ): R {
   return safeKeys(route)
     .reduce((acc, routeName) => {
@@ -281,13 +296,17 @@ function injectParentData<
           pathVars: allPathVars,
         }),
         makeUrl: (params?: RouteParams<V, Q>): string => {
-          const paramKeys = safeKeys(params ?? { } as RouteParams<V, Q>);
-          const queryKeys = paramKeys.filter(key => key in routeConfig.queryParams);
+          if (params === undefined) {
+            return fullPath;
+          }
+
+
+          const queryKeys = safeKeys(routeConfig.queryParams).filter(key => safeKeys(params).includes(key));
           const queryParams = queryKeys.reduce<string>((search, key) => {
             const codec = routeConfig.queryParams[key];
-            const paramValue = params?.[key];
+            const paramValue = params[key] as Q[Extract<keyof Q, string>];
 
-            if (codec && paramValue !== undefined) {
+            if (codec !== undefined && paramValue !== undefined) {
               const encodedValue = codec.encode(paramValue, key);
               const joinChar: string = search === "?" ? "" : "&";
 
@@ -298,15 +317,16 @@ function injectParentData<
 
             return search;
           }, "?");
-
-          return paramKeys
-            .filter(key => key in allPathVars)
+          const baseUrl = safeKeys(allPathVars)
             .reduce((url, key) => {
-              const encoded = allPathVars[key]?.encode(params?.[key]);
+              const paramValue = params[key];
+              const codec = allPathVars[key];
+              const encoded = codec.encode(paramValue);
 
-              return url.replaceAll(`:${String(key)}`, String(encoded));
-            }, fullPath)
-            .concat(queryKeys.length > 0 ? queryParams : "");
+              return url.replaceAll(`:${String(key)}`, encoded);
+            }, fullPath);
+
+          return `${baseUrl}${queryKeys.length > 0 ? queryParams : ""}`;
         },
         parseUrl: uri => {
           const url = new URL(uri.startsWith("http") ? uri : `http://localhost${uri}`);
@@ -318,12 +338,15 @@ function injectParentData<
 
           if (pathnameChunks.length === templateChunks.length && allChuncksMatch) {
             return {
-              pathVars: mapValues(allPathVars, (codec, key) => {
-                const templateIndex = templateChunks.indexOf(`:${String(key)}`);
-                const pathVar = pathnameChunks[templateIndex]!;
+              pathVars: safeKeys(allPathVars)
+                .reduce((params, key) => {
+                  const templateIndex = templateChunks.indexOf(`:${String(key)}`);
+                  const pathVar = pathnameChunks[templateIndex];
 
-                return codec.decode(pathVar) as V[typeof key];
-              }),
+                  return pathVar !== undefined
+                    ? { ...params, [key]: allPathVars[key].decode(pathVar) }
+                    : params;
+                }, { } as V),
               queryParams: safeKeys(routeConfig.queryParams)
                 .reduce((params, key) => {
                   const codec = routeConfig.queryParams[key];
@@ -333,12 +356,12 @@ function injectParentData<
                   if (first && codec) {
                     return {
                       ...params,
-                      [key]: codec.decode(first, { key, search }) as Q[typeof key],
+                      [key]: codec.decode(first, { key, search }),
                     };
                   }
 
                   return params;
-                }, { }),
+                }, { } as Q),
             };
           }
 
