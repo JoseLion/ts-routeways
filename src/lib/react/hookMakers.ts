@@ -1,26 +1,19 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
-import {
-  CodecToPathVars,
-  CodecToQueryParams,
-  ParamsConfig,
-  PathLike,
-  RouteParams,
-} from "../commons.types";
+import { PathLike, RouteParams } from "../commons.types";
 import { safeKeys } from "../helpers/commons";
 import { Routeway } from "../Routeways";
 
-type PathVarsNavConfig<V extends ParamsConfig, Q extends ParamsConfig> = RouteParams<V, Q> & {
-  replace?: boolean;
+type RouteParamsHook = <
+  V extends Record<string, unknown>,
+  Q extends Record<string, unknown>,
+>(route: Routeway<PathLike, V, Q>) => {
+  pathVars: V;
+  queryParams: { [K in keyof Q]?: Q[K] };
+  setQueryParams: Dispatch<SetStateAction<{ [K in keyof Q]?: Q[K] }>>;
 };
 
-type RouteParamsHook = <V extends ParamsConfig, Q extends ParamsConfig>(route: Routeway<PathLike, V, Q>) => {
-  pathVars: CodecToPathVars<V>;
-  queryParams: CodecToQueryParams<Q>;
-  setQueryParams: Dispatch<SetStateAction<CodecToQueryParams<Q>>>;
-};
-
-type PathVarsHook = <V extends ParamsConfig>(route: Routeway<PathLike, V>) => CodecToPathVars<V>;
+type PathVarsHook = <V extends Record<string, unknown>>(route: Routeway<PathLike, V>) => V;
 
 interface QueryParamHook {
   /**
@@ -32,12 +25,12 @@ interface QueryParamHook {
    * @param key the key of the specific query param
    * @returns a React state and dispatcher tuple of the query param
    */
-  <Q extends ParamsConfig, K extends keyof CodecToQueryParams<Q>>(
-    route: Routeway<PathLike,
-    ParamsConfig, Q>, key: K,
+  <Q extends Record<string, unknown>, K extends keyof Q>(
+    route: Routeway<PathLike, Record<string, unknown>, Q>,
+    key: K,
   ): [
-    CodecToQueryParams<Q>[K],
-    Dispatch<SetStateAction<CodecToQueryParams<Q>[K]>>,
+    Partial<Q>[K],
+    Dispatch<SetStateAction<Partial<Q>[K]>>,
   ];
   /**
    * Make a state out of the query parameters of an specific route. The codecs
@@ -49,19 +42,21 @@ interface QueryParamHook {
    * @param fallback a value to fall back if the query param is `undefined`
    * @returns a React state and dispatcher tuple of the query param
    */
-  <Q extends ParamsConfig, K extends keyof CodecToQueryParams<Q>>(
-    route: Routeway<PathLike, ParamsConfig, Q>,
+  <Q extends Record<string, unknown>, K extends keyof Q>(
+    route: Routeway<PathLike, Record<string, unknown>, Q>,
     key: K,
-    fallback: NonNullable<CodecToQueryParams<Q>[K]>,
+    fallback: NonNullable<Partial<Q>[K]>,
   ): [
-    NonNullable<CodecToQueryParams<Q>[K]>,
-    Dispatch<SetStateAction<NonNullable<CodecToQueryParams<Q>[K]>>>,
+    Q[K],
+    Dispatch<SetStateAction<NonNullable<Q[K]>>>,
   ];
 }
 
-type AllQueryParamsHook = <Q extends ParamsConfig>(route: Routeway<PathLike, ParamsConfig, Q>) => {
-  queryParams: CodecToQueryParams<Q>;
-  setQueryParams: Dispatch<SetStateAction<CodecToQueryParams<Q>>>;
+type AllQueryParamsHook = <Q extends Record<string, unknown>>(
+  route: Routeway<PathLike, Record<string, unknown>, Q>
+) => {
+  queryParams: { [K in keyof Q]?: Q[K] };
+  setQueryParams: Dispatch<SetStateAction<{ [K in keyof Q]?: Q[K] }>>;
 };
 
 interface NavigateOptions {
@@ -76,16 +71,16 @@ interface LocationLike {
   search: string;
 }
 
-type NavigateMethods<V extends ParamsConfig, Q extends ParamsConfig> =
+type NavigateMethods<V extends Record<string, unknown>, Q extends Record<string, unknown>> =
   keyof V extends never
     ? {
-      navigate(params?: RouteParams<V, Q>): void;
-      replace(params?: RouteParams<V, Q>): void;
-    }
+        navigate(params?: RouteParams<V, Q>): void;
+        replace(params?: RouteParams<V, Q>): void;
+      }
     : {
-      navigate(params: PathVarsNavConfig<V, Q>): void;
-      replace(params: PathVarsNavConfig<V, Q>): void;
-    };
+        navigate(params: RouteParams<V, Q>): void;
+        replace(params: RouteParams<V, Q>): void;
+      };
 
 type NavigatorHook<T extends Record<string, Routeway>> =
   T extends Record<string, Routeway>
