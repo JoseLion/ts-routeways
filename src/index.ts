@@ -8,7 +8,7 @@ export {
   CodecsType,
   DecodeQuery,
 } from "./lib/Codecs";
-export { InferQueryParams, PathLike } from "./lib/commons.types";
+export { CodecsOf, InferQueryParams, PathLike, RouteParams } from "./lib/commons.types";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
 export {
