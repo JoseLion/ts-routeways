@@ -9,6 +9,12 @@ atom_feed:
 
 repository: JoseLion/ts-routeways
 
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/JoseLion/ts-routeways"
+
 defaults:
   - scope:
       path: ""
