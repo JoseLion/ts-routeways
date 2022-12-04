@@ -15,11 +15,6 @@ type PathVarsCapture<P extends PathLike> =
         ? P4
         : never;
 
-type PathVars<P extends PathLike, V extends Record<string, unknown>> =
-  PathVarsCapture<P> extends never
-    ? Record<never, never>
-    : CodecsOf<V>;
-
 type MakeUrl<V extends Record<string, unknown>, Q extends Record<string, unknown>> =
   keyof V extends never
     ? {
@@ -58,7 +53,7 @@ export type Routeway<
      * of the path variable and the value is the specific codec for the
      * variable.
      */
-    pathVars: PathVars<P, V>;
+    pathVars: CodecsOf<V>;
     /**
      * A record of the query parameters configuration. The key refers to the
      * name of the query parameters and the value is the specific codec for the
@@ -114,34 +109,34 @@ type ResultSubRoutes<B extends RoutewaysBuilder<Record<string, Routeway>>, V ext
       : never
     : never;
 
-type GetResultRoute<S extends Routeway, V extends Record<string, unknown>> =
-  S extends Routeway<infer G, infer PV, infer Q, infer SR>
+type GetResultRoute<S extends Routeway, V1 extends Record<string, unknown>> =
+  S extends Routeway<infer G, infer V2, infer Q, infer SR>
     ? Routeway<
         G,
-        { [K in keyof (V & PV)]: (V & PV)[K]; },
+        { [K in keyof (V1 & V2)]: (V1 & V2)[K]; },
         Q,
-        { [K in keyof SR]: GetResultRoute<SR[K], { [K2 in keyof (V & PV)]: (V & PV)[K2] }>; }
+        { [K in keyof SR]: GetResultRoute<SR[K], { [K2 in keyof (V1 & V2)]: (V1 & V2)[K2] }>; }
       >
     : never;
 
 type PathConfig<
   N extends string,
   P extends PathLike,
-  V extends Record<string, unknown>,
+  V extends { [K in PathVarsCapture<P>]: V[K] },
   Q extends Record<string, unknown>,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: CodecsOf<Q>; }
-      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: CodecsOf<Q>; };
+      : { name: N; path: P; pathVars: CodecsOf<V>; queryParams?: CodecsOf<Q>; };
 
 type NestConfig<
   N extends string,
   P extends PathLike,
-  V extends Record<string, unknown>,
+  V extends { [K in PathVarsCapture<P>]: V[K] },
   Q extends Record<string, unknown>,
   S extends RoutewaysBuilder<Record<string, Routeway>>,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: CodecsOf<Q>; subRoutes: S; }
-      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: CodecsOf<Q>; subRoutes: S; };
+      : { name: N; path: P; pathVars: CodecsOf<V>; queryParams?: CodecsOf<Q>; subRoutes: S; };
 
 /**
  * The Routeways builder API.
@@ -172,14 +167,14 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
   public path<
     N extends string,
     P extends PathLike,
-    V extends Record<string, unknown> = Record<never, unknown>,
-    Q extends Record<string, unknown> = Record<never, unknown>,
+    V extends { [K in PathVarsCapture<P>]: V[K] },
+    Q extends Record<string, unknown>,
   >(
     config: PathConfig<N, P, V, Q>,
   ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, V, Q>; }> {
     const { name, path, pathVars, queryParams = { } as CodecsOf<Q> } = "pathVars" in config
       ? config
-      : { ...config, pathVars: { } as PathVars<P, V> };
+      : { ...config, pathVars: { } as CodecsOf<V> };
 
     return new RoutewaysBuilder({
       ...this.routes,
@@ -212,15 +207,15 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
   public nest<
     N extends string,
     P extends PathLike,
-    V extends Record<string, unknown> = Record<never, unknown>,
-    Q extends Record<string, unknown> = Record<never, unknown>,
-    S extends RoutewaysBuilder<DefinedSubRoutes<S>> = RoutewaysBuilder<Record<never, Routeway>>,
+    V extends { [K in PathVarsCapture<P>]: V[K] },
+    Q extends Record<string, unknown>,
+    S extends RoutewaysBuilder<DefinedSubRoutes<S>>,
   >(
     config: NestConfig<N, P, V, Q, S>,
   ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, ResultSubRoutes<S, V>> }> {
     const { name, path, pathVars, queryParams = { } as CodecsOf<Q>, subRoutes } = "pathVars" in config
       ? config
-      : { ...config, pathVars: { } as PathVars<P, V> };
+      : { ...config, pathVars: { } as CodecsOf<V> };
     const subRouteRecord = subRoutes.routes as ResultSubRoutes<S, V>;
 
     const newRoute: Routeway<P, V, Q, ResultSubRoutes<S, V>> = {
@@ -362,10 +357,18 @@ function injectParentData<
 
           throw new UrlParserError(`Unable to parse "${uri}". The url does not match the template "${fullPath}"`);
         },
-        [routeName]: typeof subRoute !== "function"
+        [routeName]: isRouteway<V, Q, S>(subRoute)
           ? injectParentData(subRoute, fullPath, allPathVars)
           : subRoute,
         template: () => fullPath,
       };
     }, { } as R);
+}
+
+function isRouteway<
+  V extends Record<string, unknown>,
+  Q extends Record<string, unknown>,
+  S extends Record<string, Routeway>,
+>(value: unknown): value is Routeway<PathLike, V, Q, S> {
+  return typeof value !== "function";
 }

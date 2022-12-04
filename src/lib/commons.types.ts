@@ -11,7 +11,10 @@ export type PathLike = `/${string}`;
  *
  * @param T the record type to define the codecs
  */
-export type CodecsOf<T extends Record<string, unknown>> = { [K in keyof T]: Codec<T[K]> };
+export type CodecsOf<
+  T extends Record<string, unknown>,
+  K extends keyof T = Extract<keyof T, string>,
+> = { [k in K]: Codec<T[k]> };
 
 /**
  * Merges the path variables and query parameter in a single object.
