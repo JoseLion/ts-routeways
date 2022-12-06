@@ -1,19 +1,20 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
-import { PathLike, RouteParams } from "../commons.types";
+import { Codec } from "../Codecs";
+import { CodecsToRecord, PathLike, RouteParams } from "../commons.types";
 import { safeKeys } from "../helpers/commons";
 import { Routeway } from "../Routeways";
 
 type RouteParamsHook = <
-  V extends Record<string, unknown>,
-  Q extends Record<string, unknown>,
+  V extends Record<string, Codec<unknown>>,
+  Q extends Record<string, Codec<unknown>>,
 >(route: Routeway<PathLike, V, Q>) => {
-  pathVars: V;
-  queryParams: { [K in keyof Q]?: Q[K] };
-  setQueryParams: Dispatch<SetStateAction<{ [K in keyof Q]?: Q[K] }>>;
+  pathVars: CodecsToRecord<V>;
+  queryParams: Partial<CodecsToRecord<Q>>;
+  setQueryParams: Dispatch<SetStateAction<Partial<CodecsToRecord<Q>>>>;
 };
 
-type PathVarsHook = <V extends Record<string, unknown>>(route: Routeway<PathLike, V>) => V;
+type PathVarsHook = <V extends Record<string, Codec<unknown>>>(route: Routeway<PathLike, V>) => CodecsToRecord<V>;
 
 interface QueryParamHook {
   /**
@@ -25,8 +26,8 @@ interface QueryParamHook {
    * @param key the key of the specific query param
    * @returns a React state and dispatcher tuple of the query param
    */
-  <Q extends Record<string, unknown>, K extends keyof Q>(
-    route: Routeway<PathLike, Record<string, unknown>, Q>,
+  <Q extends Record<string, Codec<unknown>>, K extends keyof Q>(
+    route: Routeway<PathLike, Record<string, Codec<unknown>>, Q>,
     key: K,
   ): [
     Partial<Q>[K],
@@ -42,8 +43,8 @@ interface QueryParamHook {
    * @param fallback a value to fall back if the query param is `undefined`
    * @returns a React state and dispatcher tuple of the query param
    */
-  <Q extends Record<string, unknown>, K extends keyof Q>(
-    route: Routeway<PathLike, Record<string, unknown>, Q>,
+  <Q extends Record<string, Codec<unknown>>, K extends keyof Q>(
+    route: Routeway<PathLike, Record<string, Codec<unknown>>, Q>,
     key: K,
     fallback: NonNullable<Partial<Q>[K]>,
   ): [
@@ -52,11 +53,11 @@ interface QueryParamHook {
   ];
 }
 
-type AllQueryParamsHook = <Q extends Record<string, unknown>>(
-  route: Routeway<PathLike, Record<string, unknown>, Q>
+type AllQueryParamsHook = <Q extends Record<string, Codec<unknown>>>(
+  route: Routeway<PathLike, Record<string, Codec<unknown>>, Q>
 ) => {
-  queryParams: { [K in keyof Q]?: Q[K] };
-  setQueryParams: Dispatch<SetStateAction<{ [K in keyof Q]?: Q[K] }>>;
+  queryParams: Partial<CodecsToRecord<Q>>;
+  setQueryParams: Dispatch<SetStateAction<Partial<CodecsToRecord<Q>>>>;
 };
 
 interface NavigateOptions {
@@ -71,16 +72,18 @@ interface LocationLike {
   search: string;
 }
 
-type NavigateMethods<V extends Record<string, unknown>, Q extends Record<string, unknown>> =
-  keyof V extends never
-    ? {
-        navigate(params?: RouteParams<V, Q>): void;
-        replace(params?: RouteParams<V, Q>): void;
-      }
-    : {
-        navigate(params: RouteParams<V, Q>): void;
-        replace(params: RouteParams<V, Q>): void;
-      };
+type NavigateMethods<
+  V extends Record<string, Codec<unknown>>,
+  Q extends Record<string, Codec<unknown>>,
+> = keyof V extends never
+      ? {
+          navigate(params?: RouteParams<V, Q>): void;
+          replace(params?: RouteParams<V, Q>): void;
+        }
+      : {
+          navigate(params: RouteParams<V, Q>): void;
+          replace(params: RouteParams<V, Q>): void;
+        };
 
 type NavigatorHook<T extends Record<string, Routeway>> =
   T extends Record<string, Routeway>

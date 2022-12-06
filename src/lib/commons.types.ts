@@ -7,14 +7,13 @@ import { Routeway } from "./Routeways";
 export type PathLike = `/${string}`;
 
 /**
- * Defines a record of codecs based on the types of another record.
- *
- * @param T the record type to define the codecs
+ * Transform a record of codecs to a record based on the types of each codec.
  */
-export type CodecsOf<
-  T extends Record<string, unknown>,
-  K extends keyof T = Extract<keyof T, string>,
-> = { [k in K]: Codec<T[k]> };
+export type CodecsToRecord<T extends Record<string, Codec<unknown>>> = {
+  [K in keyof T]: T[K] extends Codec<infer V>
+    ? V
+    : never;
+};
 
 /**
  * Merges the path variables and query parameter in a single object.
@@ -23,9 +22,9 @@ export type CodecsOf<
  * @param Q the record type of the query parameters
  */
 export type RouteParams<
-  V extends Record<string, unknown>,
-  Q extends Record<string, unknown>,
-> = V & Partial<Q>;
+  V extends Record<string, Codec<unknown>>,
+  Q extends Record<string, Codec<unknown>>,
+> = CodecsToRecord<V> & Partial<CodecsToRecord<Q>>;
 
 /**
  * Infers the query parameters type of a route.
@@ -39,6 +38,6 @@ export type RouteParams<
  * @param T the type of the route to make the infer
  */
 export type InferQueryParams<T extends Routeway> =
-  T extends Routeway<PathLike, Record<string, unknown>, infer Q, Record<never, Routeway>>
-    ? Partial<Q>
+  T extends Routeway<PathLike, Record<string, Codec<unknown>>, infer Q, Record<never, Routeway>>
+    ? Partial<CodecsToRecord<Q>>
     : never;

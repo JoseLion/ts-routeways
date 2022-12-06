@@ -1,7 +1,7 @@
 import { expect } from "@stackbuilders/assertive-ts";
 
 import { Codecs } from "../../../src/lib/Codecs";
-import { CodecsOf, InferQueryParams, PathLike, RouteParams } from "../../../src/lib/commons.types";
+import { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../src/lib/commons.types";
 import { TestRoutes } from "../../TestRoutes";
 
 describe("[Unit] Commons.types.test.ts", () => {
@@ -13,23 +13,23 @@ describe("[Unit] Commons.types.test.ts", () => {
     });
   });
 
-  describe("CodecsOf<T>", () => {
-    it("defines an object of codecs based on T", () => {
-      const base = { x: 1, y: true, z: "foo" };
-      const codecs: CodecsOf<typeof base> = {
-        x: Codecs.Number,
-        y: Codecs.Boolean,
-        z: Codecs.String,
+  describe("CodecsToRecord<T>", () => {
+    it("transforms a record of codecs to a recors of the codec's types", () => {
+      const codecs = { x: Codecs.Boolean, y: Codecs.Number, z: Codecs.String };
+      const result: CodecsToRecord<typeof codecs> = {
+        x: true,
+        y: 1,
+        z: "foo",
       };
 
-      expect(codecs).toBeTruthy();
+      expect(result).toBeTruthy();
     });
   });
 
   describe("RouteParams<V, Q>", () => {
     it("defines an object of both path variables and quuery params based on V and Q", () => {
-      const pathVars = { id: 1 };
-      const queryParams = { page: 1, sort: "foo", zod: false };
+      const pathVars = { id: Codecs.Number };
+      const queryParams = { page: Codecs.Number, sort: Codecs.String, zod: Codecs.Boolean };
       const params: RouteParams<typeof pathVars, typeof queryParams> = {
         id: 1,
         page: 1,
