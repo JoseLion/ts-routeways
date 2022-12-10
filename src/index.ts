@@ -11,6 +11,7 @@ export {
 export { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "./lib/commons.types";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
+export { UrlParserError } from "./lib/errors/UrlParserError";
 export {
   makeGotToHook,
   makeNavigatorHook,
