@@ -1,11 +1,12 @@
 import { Codec } from "./Codecs";
 import {
+  CodecMap,
   CodecsToRecord,
   PathLike,
   RouteParams,
-} from "./commons.types";
+  safeKeys,
+} from "./helpers/common";
 import { UrlParserError } from "./errors/UrlParserError";
-import { safeKeys } from "./helpers/commons";
 
 type PathVarsCapture<P extends PathLike> =
   P extends `${string}/:${infer P1}/${string}:${infer P2}`
@@ -17,8 +18,8 @@ type PathVarsCapture<P extends PathLike> =
         : never;
 
 type MakeUrl<
-  V extends Record<string, Codec<unknown>>,
-  Q extends Record<string, Codec<unknown>>,
+  V extends CodecMap,
+  Q extends CodecMap,
 > = keyof V extends never
       ? {
           /**
@@ -43,8 +44,8 @@ type MakeUrl<
 
 export type Routeway<
   P extends PathLike = PathLike,
-  V extends Record<string, Codec<unknown>> = Record<never, unknown>,
-  Q extends Record<string, Codec<unknown>> = Record<never, unknown>,
+  V extends CodecMap = Record<never, Codec<unknown>>,
+  Q extends CodecMap = Record<never, Codec<unknown>>,
   S extends Record<string, Routeway> = Record<never, never>,
 > = MakeUrl<V, Q> & {
   /**
@@ -128,7 +129,7 @@ type PathConfig<
   N extends string,
   P extends PathLike,
   V extends Record<PathVarsCapture<P>, Codec<unknown>>,
-  Q extends Record<string, Codec<unknown>>,
+  Q extends CodecMap,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; }
       : { name: N; path: P; pathVars: V; queryParams?: Q; };
@@ -137,7 +138,7 @@ type NestConfig<
   N extends string,
   P extends PathLike,
   V extends Record<PathVarsCapture<P>, Codec<unknown>>,
-  Q extends Record<string, Codec<unknown>>,
+  Q extends CodecMap,
   S extends RoutewaysBuilder<Record<string, Routeway>>,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; subRoutes: S; }
@@ -173,7 +174,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     N extends string,
     P extends PathLike,
     V extends Record<PathVarsCapture<P>, Codec<unknown>>,
-    Q extends Record<string, Codec<unknown>>,
+    Q extends CodecMap,
   >(
     config: PathConfig<N, P, V, Q>,
   ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, V, Q>; }> {
@@ -213,7 +214,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     N extends string,
     P extends PathLike,
     V extends Record<PathVarsCapture<P>, Codec<unknown>>,
-    Q extends Record<string, Codec<unknown>>,
+    Q extends CodecMap,
     S extends RoutewaysBuilder<DefinedSubRoutes<S>>,
   >(
     config: NestConfig<N, P, V, Q, S>,
@@ -270,8 +271,8 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
 function injectParentData<
   R extends Routeway<PathLike, V, Q, S>,
   S extends Record<string, Routeway> = Record<never, never>,
-  V extends Record<string, Codec<unknown>> = Record<never, Codec<unknown>>,
-  Q extends Record<string, Codec<unknown>> = Record<never, Codec<unknown>>,
+  V extends CodecMap = Record<never, Codec<unknown>>,
+  Q extends CodecMap = Record<never, Codec<unknown>>,
 >(
   route: R,
   path = "",
@@ -371,8 +372,8 @@ function injectParentData<
 }
 
 function isRouteway<
-  V extends Record<string, Codec<unknown>>,
-  Q extends Record<string, Codec<unknown>>,
+  V extends CodecMap,
+  Q extends CodecMap,
   S extends Record<string, Routeway>,
 >(value: unknown): value is Routeway<PathLike, V, Q, S> {
   return typeof value !== "function";
