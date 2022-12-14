@@ -2,7 +2,7 @@ import { match } from "ts-pattern";
 
 import { CodecDecodeError } from "./errors/CodecDecodeError";
 import { CodecEncodeError } from "./errors/CodecEncodeError";
-import { isValidDate } from "./helpers/commons";
+import { isValidDate } from "./helpers/common";
 
 export interface ArrayCodecOptions {
   /**
