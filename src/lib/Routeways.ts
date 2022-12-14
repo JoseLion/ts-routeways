@@ -25,16 +25,15 @@ type PathVarsCapture<P extends PathLike> =
         : never;
 
 /**
- * Creates a mapped type where the keys must be the captures from `P` and the
- * values the codec from `V` on each key.
+ * Conditional constraint for path variables based on the result of capturing
+ * the literals on the {@link PathLike} string.
  *
  * @param P the {@link PathLike} string
- * @param V the path vars codec record
  */
-type PathVars<
-  P extends PathLike,
-  V extends Record<PathVarsCapture<P>, Codec<unknown>>,
-> = { [K in PathVarsCapture<P>]: V[K] };
+type PathVars<P extends PathLike> =
+  PathVarsCapture<P> extends never
+    ? Record<never, never>
+    : Record<PathVarsCapture<P>, Codec<unknown>>;
 
 /**
  * Conditionally create the `makeUrl` function based on the codec map of path
@@ -159,24 +158,46 @@ type GetResultRoute<S extends Routeway, V1 extends Record<string, unknown>> =
       >
     : never;
 
-type PathConfig<
+/**
+ * Conditionally create a route configuratiion based on the `path` property
+ * string. If the path contains path variables, the `pathVars` property is
+ * required and it must be defined with path variables names as its keys.
+ *
+ * @param N the name of the route
+ * @param P the {@link PathLike} string
+ * @param V the path vars codec record
+ * @param Q the query param codec record
+ */
+export type PathConfig<
   N extends string,
   P extends PathLike,
-  V extends Record<PathVarsCapture<P>, Codec<unknown>>,
+  V extends PathVars<P>,
   Q extends CodecMap,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; }
-      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: Q; };
+      : { name: N; path: P; pathVars: V; queryParams?: Q; };
 
-type NestConfig<
+/**
+ * Conditionally create a route configuratiion based on the `path` property
+ * string. If the path contains path variables, the `pathVars` property is
+ * required and it must be defined with path variables names as its keys.
+ * Aditionally, this configuration requires a `subRoutes` property.
+ *
+ * @param N the name of the route
+ * @param P the {@link PathLike} string
+ * @param V the path vars codec record
+ * @param Q the query param codec record
+ * @param S the `RoutewaysBuilder` for the subroutes
+ */
+export type NestConfig<
   N extends string,
   P extends PathLike,
-  V extends Record<PathVarsCapture<P>, Codec<unknown>>,
+  V extends PathVars<P>,
   Q extends CodecMap,
   S extends RoutewaysBuilder<Record<string, Routeway>>,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; subRoutes: S; }
-      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: Q; subRoutes: S; };
+      : { name: N; path: P; pathVars: V; queryParams?: Q; subRoutes: S; };
 
 /**
  * The Routeways builder API.
@@ -211,7 +232,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     Q extends CodecMap,
   >(
     config: PathConfig<N, P, V, Q>,
-  ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, PathVars<P, V>, Q>; }> {
+  ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, V, Q>; }> {
     const { name, path, pathVars, queryParams = { } as Q } = "pathVars" in config
       ? config
       : { ...config, pathVars: { } as V };
@@ -247,18 +268,18 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
   public nest<
     N extends string,
     P extends PathLike,
-    V extends Record<PathVarsCapture<P>, Codec<unknown>>,
+    V extends PathVars<P>,
     Q extends CodecMap,
     S extends RoutewaysBuilder<DefinedSubRoutes<S>>,
   >(
     config: NestConfig<N, P, V, Q, S>,
-  ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, PathVars<P, V>, Q, ResultSubRoutes<S, V>> }> {
+  ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, ResultSubRoutes<S, V>> }> {
     const { name, path, pathVars, queryParams = { } as Q, subRoutes } = "pathVars" in config
       ? config
       : { ...config, pathVars: { } as V };
     const subRouteRecord = subRoutes.routes as ResultSubRoutes<S, V>;
 
-    const newRoute: Routeway<P, PathVars<P, V>, Q, ResultSubRoutes<S, V>> = {
+    const newRoute: Routeway<P, V, Q, ResultSubRoutes<S, V>> = {
       $config: () => ({
         pathVars,
         queryParams,

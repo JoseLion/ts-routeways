@@ -1,8 +1,8 @@
 import { expect } from "@stackbuilders/assertive-ts";
 
-import { Codecs } from "../../../src/lib/Codecs";
-import { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../src/lib/helpers/common";
-import { TestRoutes } from "../../TestRoutes";
+import { Codecs } from "../../../../src/lib/Codecs";
+import { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../../src/lib/helpers/common";
+import { TestRoutes } from "../../../TestRoutes";
 
 describe("[Unit] Commons.types.test.ts", () => {
   describe("PathLike", () => {
