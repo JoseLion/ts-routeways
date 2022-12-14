@@ -8,6 +8,13 @@ import {
 } from "./helpers/common";
 import { UrlParserError } from "./errors/UrlParserError";
 
+/**
+ * Recursively creates a union of string literals from a {@link PathLike}
+ * string xtracting the path variables sections. I.e. anything that starts with
+ * `:` on the path.
+ *
+ * @param P the {@link PathLike} string
+ */
 type PathVarsCapture<P extends PathLike> =
   P extends `${string}/:${infer P1}/${string}:${infer P2}`
     ? P1 | PathVarsCapture<`/:${P2}`>
@@ -17,6 +24,25 @@ type PathVarsCapture<P extends PathLike> =
         ? P4
         : never;
 
+/**
+ * Creates a mapped type where the keys must be the captures from `P` and the
+ * values the codec from `V` on each key.
+ *
+ * @param P the {@link PathLike} string
+ * @param V the path vars codec record
+ */
+type PathVars<
+  P extends PathLike,
+  V extends Record<PathVarsCapture<P>, Codec<unknown>>,
+> = { [K in PathVarsCapture<P>]: V[K] };
+
+/**
+ * Conditionally create the `makeUrl` function based on the codec map of path
+ * variables and query parameters.
+ *
+ * @param V the path vars codec record
+ * @param Q the query param codec record
+ */
 type MakeUrl<
   V extends CodecMap,
   Q extends CodecMap,
@@ -42,6 +68,14 @@ type MakeUrl<
           makeUrl(params: RouteParams<V, Q>): string;
         };
 
+/**
+ * A `Routeway` route instance. It may contain more keys with other subroutes.
+ *
+ * @param P the {@link PathLike} string
+ * @param V the path vars codec record
+ * @param Q the query param codec record
+ * @param S the record of `Routeway` subroutes
+ */
 export type Routeway<
   P extends PathLike = PathLike,
   V extends CodecMap = Record<never, Codec<unknown>>,
@@ -132,7 +166,7 @@ type PathConfig<
   Q extends CodecMap,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; }
-      : { name: N; path: P; pathVars: V; queryParams?: Q; };
+      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: Q; };
 
 type NestConfig<
   N extends string,
@@ -142,7 +176,7 @@ type NestConfig<
   S extends RoutewaysBuilder<Record<string, Routeway>>,
 > = PathVarsCapture<P> extends never
       ? { name: N; path: P; queryParams?: Q; subRoutes: S; }
-      : { name: N; path: P; pathVars: V; queryParams?: Q; subRoutes: S; };
+      : { name: N; path: P; pathVars: PathVars<P, V>; queryParams?: Q; subRoutes: S; };
 
 /**
  * The Routeways builder API.
@@ -177,7 +211,7 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     Q extends CodecMap,
   >(
     config: PathConfig<N, P, V, Q>,
-  ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, V, Q>; }> {
+  ): RoutewaysBuilder<{ [K in keyof M]: M[K]; } & { [K in N]: Routeway<P, PathVars<P, V>, Q>; }> {
     const { name, path, pathVars, queryParams = { } as Q } = "pathVars" in config
       ? config
       : { ...config, pathVars: { } as V };
@@ -218,13 +252,13 @@ export class RoutewaysBuilder<M extends Record<string, Routeway>> {
     S extends RoutewaysBuilder<DefinedSubRoutes<S>>,
   >(
     config: NestConfig<N, P, V, Q, S>,
-  ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, V, Q, ResultSubRoutes<S, V>> }> {
+  ): RoutewaysBuilder<{ [K in keyof M]: M[K] } & { [K in N]: Routeway<P, PathVars<P, V>, Q, ResultSubRoutes<S, V>> }> {
     const { name, path, pathVars, queryParams = { } as Q, subRoutes } = "pathVars" in config
       ? config
       : { ...config, pathVars: { } as V };
     const subRouteRecord = subRoutes.routes as ResultSubRoutes<S, V>;
 
-    const newRoute: Routeway<P, V, Q, ResultSubRoutes<S, V>> = {
+    const newRoute: Routeway<P, PathVars<P, V>, Q, ResultSubRoutes<S, V>> = {
       $config: () => ({
         pathVars,
         queryParams,
