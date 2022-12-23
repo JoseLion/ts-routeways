@@ -102,6 +102,8 @@ type GotToHook = <S extends Routeway>(route: S, options?: NavigateOptions) =>
  *
  * @param getNavigate a function or hook that provideds a navigation function
  * @returns a hook top create callback-like "goTo" functions of a route
+ *
+ * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
 export function makeGotToHook(getNavigate: () => NavigateFn): GotToHook {
   return (route, options) => {
@@ -121,6 +123,8 @@ export function makeGotToHook(getNavigate: () => NavigateFn): GotToHook {
  * @param routes the custom `Routeways` routes
  * @param getNavigate a function or hook that provideds a navigation function
  * @returns a navigation hook of the custom `Routeways` routes
+ *
+ * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
 export function makeNavigatorHook<T extends Record<string, Routeway>>(
   routes: T,
@@ -166,6 +170,8 @@ export function makeNavigatorHook<T extends Record<string, Routeway>>(
  *
  * @param getLocation a function or hook that provides a location-like object
  * @returns a hook to consume the path variables of a route
+ *
+ * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
 export function makePathVarsHook(getLocation: () => LocationLike): PathVarsHook {
   return route => {
@@ -188,6 +194,8 @@ export function makePathVarsHook(getLocation: () => LocationLike): PathVarsHook 
  * @param getLocation a function or hook that provides a location-like object
  * @param getNavigate a function or hook that provideds a navigation function
  * @returns a hook to manage a query parameter of a route
+ *
+ * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
 export function makeQueryParamHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): QueryParamHook {
   return ((route, key, fallback) => {
@@ -224,6 +232,8 @@ export function makeQueryParamHook(getLocation: () => LocationLike, getNavigate:
  * @param getLocation a function or hook that provides a location-like object
  * @param getNavigate a function or hook that provideds a navigation function
  * @returns a hook to manage all query parameters of a route
+ *
+ * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
 export function makeAllQueryParamsHook(
   getLocation: () => LocationLike,
@@ -264,6 +274,8 @@ export function makeAllQueryParamsHook(
  * @param getLocation a function or hook that provides a location-like object
  * @param getNavigate a function or hook that provideds a navigation function
  * @returns a hook to manage all path variables and query parameters of a route
+ *
+ * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
 export function makeRouteParamsHook(getLocation: () => LocationLike, getNavigate: () => NavigateFn): RouteParamsHook {
   return route => {
