@@ -1,6 +1,8 @@
-# Usage with React
+# (deprecated) Usage with React
 
 As mentioned in the main documentation, `ts-routeways` is an agnostic solution, so you should be able to integrate it with React in the way it works better for you. However, here we show a quick example on how it can be used with a React application that uses React Router v6.
+
+> These hook makers are deprecated in favor of [react-routeways](https://www.npmjs.com/package/react-routeways), which provides a more consistent usage woth react-router-dom (v6+), and aditional helpers which makes the experiance of ts-routeways + react more natural, easier, and safer to use.
 
 ## Define your router
 
