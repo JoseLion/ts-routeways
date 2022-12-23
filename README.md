@@ -30,7 +30,7 @@ Some features of `ts-routeways` include:
 > We provide the most commmon codecs in on single `Codecs` object, which can be extended to add custom codecs of your own.
 
 🔧 Fully agnostic. You can use it with any framework/library, the concepts apply to any web-like router.
-> We provide optional hook makers for React, just as a convenience. We're open to add more helpers for other libraries if necessary. PRs and suggestions are always welcome!
+> (deprecated) ~~We provide optional hook makers for React, just as a convenience. We're open to add more helpers for other libraries if necessary. PRs and suggestions are always welcome!~~
 
 ## Install
 
@@ -169,7 +169,9 @@ export function searchUsers(params: UsersQueryParams): Promise<User[]> {
 
 Although the design of ts-routeways is meant to be agnostic, it provides a few helpers to create custom hooks that will allow you to handle navigation, path variables, and query parameters, all in a ReactJS fashion. You can find further documentation and examples in the link below:
 
-[React Interagation Docs 📘](./docs/ReactIntegration.md)
+[(deprecated) React Interagation Docs 📘](./docs/ReactIntegration.md)
+
+> Use [react-routeways](https://www.npmjs.com/package/react-routeways) package instead.
 
 ## API Reference
 
