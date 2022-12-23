@@ -8,6 +8,9 @@ export {
   CodecsType,
   DecodeQuery,
 } from "./lib/Codecs";
+export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
+export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
+export { UrlParserError } from "./lib/errors/UrlParserError";
 export {
   CodecMap,
   CodecsToRecord,
@@ -15,11 +18,8 @@ export {
   PathLike,
   RouteParams,
 } from "./lib/helpers/common";
-export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
-export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
-export { UrlParserError } from "./lib/errors/UrlParserError";
 export {
-  makeGotToHook,
+  makeAllQueryParamsHook, makeGotToHook,
   makeNavigatorHook,
   makePathVarsHook,
   makeQueryParamHook,
