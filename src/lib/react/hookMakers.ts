@@ -28,8 +28,8 @@ interface QueryParamHook {
     route: Routeway<PathLike, CodecMap, Q>,
     key: K,
   ): [
-    Partial<Q>[K],
-    Dispatch<SetStateAction<Partial<Q>[K]>>,
+    Partial<CodecsToRecord<Q>>[K],
+    Dispatch<SetStateAction<Partial<CodecsToRecord<Q>>[K]>>,
   ];
   /**
    * Make a state out of the query parameters of an specific route. The codecs
@@ -44,10 +44,10 @@ interface QueryParamHook {
   <Q extends CodecMap, K extends keyof Q>(
     route: Routeway<PathLike, CodecMap, Q>,
     key: K,
-    fallback: NonNullable<Partial<Q>[K]>,
+    fallback: NonNullable<Partial<CodecsToRecord<Q>>[K]>,
   ): [
-    Q[K],
-    Dispatch<SetStateAction<NonNullable<Q[K]>>>,
+    CodecsToRecord<Q>[K],
+    Dispatch<SetStateAction<NonNullable<CodecsToRecord<Q>[K]>>>,
   ];
 }
 
@@ -93,7 +93,7 @@ type NavigatorHook<T extends Record<string, Routeway>> =
       }
     : never;
 
-type GotToHook = <S extends Routeway>(route: S, options?: NavigateOptions) =>
+type GoToHook = <S extends Routeway>(route: S, options?: NavigateOptions) =>
   (...params: Parameters<S["makeUrl"]>) => () => void;
 
 /**
@@ -105,7 +105,7 @@ type GotToHook = <S extends Routeway>(route: S, options?: NavigateOptions) =>
  *
  * @deprecated in favour of {@link https://www.npmjs.com/package/react-routeways react-routeways} package
  */
-export function makeGotToHook(getNavigate: () => NavigateFn): GotToHook {
+export function makeGotToHook(getNavigate: () => NavigateFn): GoToHook {
   return (route, options) => {
     const navigate = getNavigate();
 
