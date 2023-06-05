@@ -19,7 +19,8 @@ export {
   RouteParams,
 } from "./lib/helpers/common";
 export {
-  makeAllQueryParamsHook, makeGotToHook,
+  makeAllQueryParamsHook,
+  makeGotToHook,
   makeNavigatorHook,
   makePathVarsHook,
   makeQueryParamHook,

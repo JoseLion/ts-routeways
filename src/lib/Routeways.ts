@@ -1,4 +1,5 @@
 import { Codec } from "./Codecs";
+import { UrlParserError } from "./errors/UrlParserError";
 import {
   CodecMap,
   CodecsToRecord,
@@ -6,7 +7,6 @@ import {
   RouteParams,
   safeKeys,
 } from "./helpers/common";
-import { UrlParserError } from "./errors/UrlParserError";
 
 /**
  * Recursively creates a union of string literals from a {@link PathLike}
@@ -371,9 +371,11 @@ function injectParentData<
           const baseUrl = safeKeys(allPathVars)
             .reduce((url, key) => {
               const paramValue = params[key];
-              const codec = allPathVars[key]!;
+              const codec = allPathVars[key];
 
-              return url.replaceAll(`:${String(key)}`, codec.encode(paramValue));
+              return codec !== undefined
+                ? url.replaceAll(`:${String(key)}`, codec.encode(paramValue))
+                : url;
             }, fullPath);
 
           return `${baseUrl}${queryKeys.length > 0 ? queryParams : ""}`;
@@ -392,9 +394,9 @@ function injectParentData<
                 .reduce((params, key) => {
                   const templateIndex = templateChunks.indexOf(`:${String(key)}`);
                   const pathVar = pathnameChunks[templateIndex];
-                  const codec = allPathVars[key]!;
+                  const codec = allPathVars[key];
 
-                  return pathVar !== undefined
+                  return codec !== undefined && pathVar !== undefined
                     ? { ...params, [key]: codec.decode(pathVar) }
                     : params;
                 }, { } as V),

@@ -1,5 +1,5 @@
-import { Codec } from "../Codecs";
-import { Routeway } from "../Routeways";
+import type { Codec } from "../Codecs";
+import type { Routeway } from "../Routeways";
 
 /**
  * Base structure of codec definitions. Useful for generic constraints.
