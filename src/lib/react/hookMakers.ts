@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
-import { CodecMap, CodecsToRecord, PathLike, RouteParams, safeKeys } from "../helpers/common";
 import { Routeway } from "../Routeways";
+import { CodecMap, CodecsToRecord, PathLike, RouteParams, safeKeys } from "../helpers/common";
 
 type RouteParamsHook = <
   V extends CodecMap,

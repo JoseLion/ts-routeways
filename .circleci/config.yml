@@ -99,7 +99,7 @@ workflows:
       - build:
           matrix:
             parameters:
-              nodejs: ["16", "17", "18", "19"]
+              nodejs: ["16", "17", "18", "19", "20"]
 
       - release:
           requires:

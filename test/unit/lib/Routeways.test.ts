@@ -186,7 +186,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
           const route2 = TestRoutes.library.author.parseUrl("/library/3/author/1");
           const route3 = TestRoutes.library.author.book.parseUrl("/library/3/author/1/book/7");
           const route4 = TestRoutes.library.author.collection.tome.parseUrl(
-            "/library/3/author/2/collection/LOTR/tome/4gfd-adf5"
+            "/library/3/author/2/collection/LOTR/tome/4gfd-adf5",
           );
 
           expect(route1.pathVars).toBeEqual({ libId: 3 });
@@ -247,7 +247,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
 
           expect(error).toBeInstanceOf(UrlParserError);
           expect(error.message).toBeEqual(
-            `Unable to parse "${url}". The url does not match the template "${route.template()}"`
+            `Unable to parse "${url}". The url does not match the template "${route.template()}"`,
           );
         });
       });

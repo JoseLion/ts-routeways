@@ -201,7 +201,7 @@ export const Codecs: Readonly<CodecsType> = {
         return String(value);
       }
 
-      throw new CodecEncodeError(`Unable to encode "${value}". A boolean value was expected`);
+      throw new CodecEncodeError(`Unable to encode "${String(value)}". A boolean value was expected`);
     },
   },
   Date: {
@@ -219,7 +219,7 @@ export const Codecs: Readonly<CodecsType> = {
         return value.toISOString();
       }
 
-      throw new CodecEncodeError(`Unable to encode "${value}". A Date instance was expected`);
+      throw new CodecEncodeError(`Unable to encode "${String(value)}". A Date instance was expected`);
     },
   },
   Number: {
@@ -237,7 +237,7 @@ export const Codecs: Readonly<CodecsType> = {
         return String(value);
       }
 
-      throw new CodecEncodeError(`Unable to encode "${value}". A number value was expected`);
+      throw new CodecEncodeError(`Unable to encode "${String(value)}". A number value was expected`);
     },
   },
   String: {
@@ -247,7 +247,7 @@ export const Codecs: Readonly<CodecsType> = {
         return value;
       }
 
-      throw new CodecEncodeError(`Unable to encode "${value}". A string value was expected`);
+      throw new CodecEncodeError(`Unable to encode "${String(value)}". A string value was expected`);
     },
   },
   array(codec, options = { }) {
@@ -308,7 +308,7 @@ export const Codecs: Readonly<CodecsType> = {
             .exhaustive();
         }
 
-        throw new CodecEncodeError(`Unable to encode "${value}". An array value was expected`);
+        throw new CodecEncodeError(`Unable to encode "${String(value)}". An array value was expected`);
       },
     };
   },
@@ -341,7 +341,7 @@ export const Codecs: Readonly<CodecsType> = {
         }
 
         throw new CodecEncodeError(
-          `Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`
+          `Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`,
         );
       },
     };
@@ -365,7 +365,7 @@ export const Codecs: Readonly<CodecsType> = {
         }
 
         throw new CodecEncodeError(
-          `Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`
+          `Unable to encode "${value}". A literal value of "[${literals.join(", ")}]" was expected`,
         );
       },
     };
