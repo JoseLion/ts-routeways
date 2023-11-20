@@ -1,10 +1,12 @@
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/JoseLion/ts-routeways/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/JoseLion/ts-routeways/tree/main)
+[![CI](https://github.com/JoseLion/ts-routeways/actions/workflows/ci.yml/badge.svg)](https://github.com/JoseLion/ts-routeways/actions/workflows/ci.yml)
+[![Pages](https://github.com/JoseLion/ts-routeways/actions/workflows/pages.yml/badge.svg)](https://github.com/JoseLion/ts-routeways/actions/workflows/pages.yml)
+[![Release](https://github.com/JoseLion/ts-routeways/actions/workflows/release.yml/badge.svg)](https://github.com/JoseLion/ts-routeways/actions/workflows/release.yml)
 [![NPM version](https://img.shields.io/npm/v/ts-routeways)](https://www.npmjs.com/package/ts-routeways)
 [![NPM bundle size](https://img.shields.io/bundlephobia/min/ts-routeways)](https://www.npmjs.com/package/ts-routeways)
 [![NPM downloads](https://img.shields.io/npm/dm/ts-routeways)](https://www.npmjs.com/package/ts-routeways)
 [![NPM license](https://img.shields.io/npm/l/ts-routeways)](./LICENSE)
 [![GitHub Release Date](https://img.shields.io/github/release-date/JoseLion/ts-routeways)](https://github.com/JoseLion/ts-routeways/releases)
-[![Snyk Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/ts-routeways)](https://snyk.io/)
+[![Known Vulnerabilities](https://snyk.io/test/github/JoseLion/ts-routeways/badge.svg)](https://snyk.io/test/github/JoseLion/ts-routeways)
 
 ![Logo](./docs/assets/logo%40128x128.png)
 
