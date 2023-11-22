@@ -37,12 +37,12 @@
     "ts-pattern": "^5.0.5"
   },
   "devDependencies": {
-    "@stackbuilders/assertive-ts": "^1.4.0",
-    "@types/mocha": "^10.0.4",
-    "@types/node": "^20.9.2",
-    "@types/react": "^18.2.37",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
+    "@assertive-ts/core": "^2.0.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.9.4",
+    "@types/react": "^18.2.38",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
     "eslint": "^8.54.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-etc": "^2.0.3",
@@ -55,7 +55,7 @@
     "semantic-release-yarn": "^3.0.2",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.2",
-    "typescript": "5.2.2"
+    "typescript": "5.3.2"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

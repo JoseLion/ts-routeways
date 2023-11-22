@@ -1,4 +1,4 @@
-import { expect } from "@stackbuilders/assertive-ts";
+import { expect } from "@assertive-ts/core";
 
 import { Codecs } from "../../../../src/lib/Codecs";
 import { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../../src/lib/helpers/common";
