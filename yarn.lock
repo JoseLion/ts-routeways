@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 6
   cacheKey: 10
 
 "@aashutoshrathi/word-wrap@npm:^1.2.3":
@@ -2799,9 +2799,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>":
+"fsevents@patch:fsevents@npm%3A~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.3
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#optional!builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
   dependencies:
     node-gyp: "npm:latest"
   conditions: os=darwin
@@ -5368,16 +5368,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.12.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.4#~builtin<compat/resolve>":
   version: 1.22.8
-  resolution: "resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
     is-core-module: "npm:^2.13.0"
     path-parse: "npm:^1.0.7"
     supports-preserve-symlinks-flag: "npm:^1.0.0"
   bin:
     resolve: bin/resolve
-  checksum: f345cd37f56a2c0275e3fe062517c650bb673815d885e7507566df589375d165bbbf4bdb6aa95600a9bc55f4744b81f452b5a63f95b9f10a72787dba3c90890a
+  checksum: 8/5479b7d431cacd5185f8db64bfcb7286ae5e31eb299f4c4f404ad8aa6098b77599563ac4257cb2c37a42f59dfc06a1bec2bcf283bb448f319e37f0feb9a09847
   languageName: node
   linkType: hard
 
@@ -6106,10 +6106,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-pattern@npm:^5.0.6":
-  version: 5.0.6
-  resolution: "ts-pattern@npm:5.0.6"
-  checksum: fa798ae1bc2ce3c064104e701f11eb4aa9f9d02dce3eaf8496ea211a5f9f74d95849193ca5e91e408358d9f04554ae04ed2133438a7a308546f8f72f76af9883
+"ts-pattern@npm:^5.0.8":
+  version: 5.0.8
+  resolution: "ts-pattern@npm:5.0.8"
+  checksum: 8/b6435c0c3f5ee8f6e399d63b422557cbd511622ebf3c11621fbe86ea1048838abe5f23e75e4070a133908e03155fc17a01264fb4283e116094285f58d1ae797a
   languageName: node
   linkType: hard
 
@@ -6117,26 +6117,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ts-routeways@workspace:."
   dependencies:
-    "@assertive-ts/core": "npm:^2.0.0"
-    "@types/mocha": "npm:^10.0.6"
-    "@types/node": "npm:^20.11.5"
-    "@types/react": "npm:^18.2.48"
-    "@typescript-eslint/eslint-plugin": "npm:^6.19.0"
-    "@typescript-eslint/parser": "npm:^6.19.0"
-    eslint: "npm:^8.56.0"
-    eslint-import-resolver-typescript: "npm:^3.6.1"
-    eslint-plugin-etc: "npm:^2.0.3"
-    eslint-plugin-import: "npm:^2.29.1"
-    eslint-plugin-jsdoc: "npm:^48.0.2"
-    eslint-plugin-sonarjs: "npm:^0.23.0"
-    mocha: "npm:^10.2.0"
-    react: "npm:^18.2.0"
-    semantic-release: "npm:^23.0.0"
-    semantic-release-yarn: "npm:^3.0.2"
-    ts-node: "npm:^10.9.2"
-    ts-pattern: "npm:^5.0.6"
-    tslib: "npm:^2.6.2"
-    typescript: "npm:5.3.3"
+    "@assertive-ts/core": ^2.0.0
+    "@types/mocha": ^10.0.6
+    "@types/node": ^20.11.5
+    "@types/react": ^18.2.48
+    "@typescript-eslint/eslint-plugin": ^6.19.0
+    "@typescript-eslint/parser": ^6.19.0
+    eslint: ^8.56.0
+    eslint-import-resolver-typescript: ^3.6.1
+    eslint-plugin-etc: ^2.0.3
+    eslint-plugin-import: ^2.29.1
+    eslint-plugin-jsdoc: ^48.0.2
+    eslint-plugin-sonarjs: ^0.23.0
+    mocha: ^10.2.0
+    react: ^18.2.0
+    semantic-release: ^23.0.0
+    semantic-release-yarn: ^3.0.2
+    ts-node: ^10.9.2
+    ts-pattern: ^5.0.8
+    tslib: ^2.6.2
+    typescript: 5.3.3
   peerDependencies:
     react: ">=16.8.0"
   languageName: unknown
@@ -6307,13 +6307,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@5.3.3#~builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=d73830"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
+  checksum: 8/f61375590b3162599f0f0d5b8737877ac0a7bc52761dbb585d67e7b8753a3a4c42d9a554c4cc929f591ffcf3a2b0602f65ae3ce74714fd5652623a816862b610
   languageName: node
   linkType: hard
 
