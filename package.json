@@ -34,7 +34,7 @@
   },
   "packageManager": "yarn@4.0.2",
   "dependencies": {
-    "ts-pattern": "^5.0.6"
+    "ts-pattern": "^5.0.8"
   },
   "devDependencies": {
     "@assertive-ts/core": "^2.0.0",
