@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { Routeway, RoutewaysBuilder } from "./lib/Routeways";
 
 export {

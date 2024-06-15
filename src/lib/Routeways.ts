@@ -203,7 +203,6 @@ export type NestConfig<
  * The Routeways builder API.
  */
 export class RoutewaysBuilder<M extends Record<string, Routeway>> {
-
   private readonly routes: M;
 
   public constructor(routes: M) {
