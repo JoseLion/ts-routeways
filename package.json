@@ -23,6 +23,9 @@
     "dist/",
     "src/"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
     "check": "yarn compile && yarn lint && yarn test --forbid-only",
@@ -31,20 +34,20 @@
     "release": "semantic-release",
     "test": "NODE_ENV=test mocha \"test/**/*.test.ts?(x)\""
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.3.0",
   "dependencies": {
-    "ts-pattern": "^5.0.6"
+    "ts-pattern": "^5.2.0"
   },
   "devDependencies": {
-    "@assertive-ts/core": "^2.0.0",
+    "@assertive-ts/core": "^2.1.0",
     "@eslint/compat": "^1.1.0",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.5.0",
-    "@stylistic/eslint-plugin": "^2.1.0",
+    "@stylistic/eslint-plugin": "^2.2.0",
     "@types/eslint__eslintrc": "^2.1.1",
     "@types/eslint__js": "^8.42.3",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.5",
+    "@types/node": "^20.14.2",
     "eslint": "^9.5.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-deprecation": "^3.0.0",
@@ -53,12 +56,12 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.12",
     "eslint-plugin-sonarjs": "^1.0.3",
-    "mocha": "^10.2.0",
-    "semantic-release": "^23.0.0",
+    "mocha": "^10.4.0",
+    "semantic-release": "^24.0.0",
     "semantic-release-yarn": "^3.0.2",
     "ts-node": "^10.9.2",
-    "tslib": "^2.6.2",
-    "typescript": "5.3.3",
+    "tslib": "^2.6.3",
+    "typescript": "5.4.5",
     "typescript-eslint": "^7.13.0"
   },
   "publishConfig": {
