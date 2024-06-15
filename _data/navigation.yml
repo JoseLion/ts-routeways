@@ -3,5 +3,3 @@ main:
     url: /docs/APIReference.html
   - title: Custom Codecs
     url: /docs/CustomCodecs.html
-  - title: React Integration
-    url: /docs/ReactIntegration.html
