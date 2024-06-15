@@ -1,4 +1,3 @@
-/* eslint-disable deprecation/deprecation */
 import { Routeway, RoutewaysBuilder } from "./lib/Routeways";
 
 export {
@@ -19,14 +18,6 @@ export {
   PathLike,
   RouteParams,
 } from "./lib/helpers/common";
-export {
-  makeAllQueryParamsHook,
-  makeGotToHook,
-  makeNavigatorHook,
-  makePathVarsHook,
-  makeQueryParamHook,
-  makeRouteParamsHook,
-} from "./lib/react/hookMakers";
 export { Routeway } from "./lib/Routeways";
 
 /**

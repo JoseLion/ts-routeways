@@ -17,23 +17,22 @@
 
 ## Why?
 
-"Yet another route library?" you might think. In part you're right, there're a lot of libraries out there designed to create routes, in some of them routes are plain, some do allow nesting; some of them have simple-wide types like `any`, and some of them have full type-safety and inference through template literals. However, the reality is that none give you the complete solution.
+"Yet another route library?" you might think. In part you're right, there are a lot of libraries out there designed to create routes, some of them routes are plain, some do allow nesting; some of them have simple-wide types like `any`, and some of them have full type-safety and inference through template literals. However, the reality is that none give you the complete solution.
 
 That is to say, once you have some routes defined, you need to consume them! You want to create URLs from them, taking into account path variables and query parameters, and as well parse a URL into an object, so you can safely use the variables and parameters in the current route. Typically, you'd use a separate library to handle query parameters, and maybe another to parse/build URLs. Wouldn't it be nice if you'd have "one ring to rule them all"? With `ts-routeways` now you can!
 
 Some features of `ts-routeways` include:
 
-🪶 Lightweight implemetation. Zero extra dependencies.
+🪶 Lightweight implementation. Zero extra dependencies.
 
-✅ TypeScript optimized. Static check ensures routes are parse/build as they should be.
+✅ TypeScript optimized. Static check ensures routes are parsed/built as they should be.
 
-🍰 Simple API. Allows nesting and spliting into multiple files (useful on bigger apps).
+🍰 Simple API. Allows nesting and splitting into multiple files (useful on bigger apps).
 
 ⚙️ Codec based. Parameters are defined with codecs imagination is the limit.
 > We provide the most commmon codecs in on single `Codecs` object, which can be extended to add custom codecs of your own.
 
 🔧 Fully agnostic. You can use it with any framework/library, the concepts apply to any web-like router.
-> (deprecated) ~~We provide optional hook makers for React, just as a convenience. We're open to add more helpers for other libraries if necessary. PRs and suggestions are always welcome!~~
 
 ## Install
 
@@ -112,7 +111,7 @@ MainRoutes.users.view.template(); // -> /users/view/:userId
 
 ## Custom Codecs
 
-Only the most basic data types are priveded by the `Codecs` helper. Sometimes you'll find yourself in the need of a more complex codec, some specific data type, or aserializable clas instance. With `ts-routeways` you can use custom codecs, and also use its extension mechanism for the `Codecs` helper, so you can have all your codecs on one place. You need only to create an object containing a `decode` and an `encode` method:
+Only the most basic data types are provided by the `Codecs` helper. Sometimes you'll find yourself in need of a more complex codec, some specific data type, or a serializable class instance. With `ts-routeways`, you can use custom codecs, and also use its extension mechanism for the `Codecs` helper, so you can have all your codecs in one place. You need only to create an object containing a `decode` and an `encode` method:
 ```ts
 interface Codec<T> {
   decode(text: string): T;
@@ -136,13 +135,13 @@ addCodec("UUID", UUIDCodec);
 Codecs.UUID // Ready to use on a router
 ```
 
-You can find more details and a complete example of custom codecs in the link bellow:
+You can find more details and a complete example of custom codecs in the link below:
 
 [Custom Codecs ⚙️](./docs/CustomCodecs.md)
 
 ## Getting your QueryParam types back
 
-Sometimes you'd like to use the queryParam types that are already defined in your router somewhere else. For instance, in the argument of the function in charge of making a request with those same query paramenters. This could be a very common pattern, let's assume we have `MainRoutes` as in the [Usage section](#usage), and an API that receives those same `byName` and `showAll` query params.
+Sometimes you'd like to use the queryParam types that are already defined in your router somewhere else. For instance, in the argument of the function in charge of making a request with those query parameters. This could be a very common pattern, let's assume we have `MainRoutes` as presented in the [Usage section](#usage) and an API that receives `byName` and `showAll` query params.
 
 **Not so safe, isn't it?**
 ```ts
@@ -153,7 +152,7 @@ export function searchUsers(params: any): Promise<User[]> {
 }
 ```
 
-Instead of that, you can infer the type of the query params of any route using the types helper `InferQueryParams<R>`, where `R` is the type your route:
+Instead, you can infer the type of the query params of any route using the types helper `InferQueryParams<R>`, where `R` is the type of your route:
 
 **This is better!**
 ```ts
@@ -168,17 +167,13 @@ export function searchUsers(params: UsersQueryParams): Promise<User[]> {
 }
 ```
 
-## Working with ReactJS ⚛️
+## Working with React.js ⚛️
 
-Although the design of ts-routeways is meant to be agnostic, it provides a few helpers to create custom hooks that will allow you to handle navigation, path variables, and query parameters, all in a ReactJS fashion. You can find further documentation and examples in the link below:
-
-[(deprecated) React Interagation Docs 📘](./docs/ReactIntegration.md)
-
-> Use [react-routeways](https://www.npmjs.com/package/react-routeways) package instead.
+If you are looking to use ts-routeways with React.js, please refer to [react-routeways](https://www.npmjs.com/package/react-routeways) instead. This package seamlessly integrates ts-routeways with React.js and [react-router](https://reactrouter.com/).
 
 ## API Reference
 
-The library is documented on its JSDocs, which is usully the most usuful place for help. However, if you'd like to see the API reference, you can find them in the link below:
+The library is documented on its JSDocs, which is the most useful place for help. However, if you'd like to see the API reference, you can find them in the link below:
 
 [API Reference 📚](./docs/APIReference.md)
 

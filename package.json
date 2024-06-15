@@ -9,7 +9,6 @@
   "license": "MIT",
   "keywords": [
     "codecs",
-    "react",
     "querystring",
     "router",
     "routes",
@@ -46,7 +45,6 @@
     "@types/eslint__js": "^8.42.3",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.5",
-    "@types/react": "^18.2.48",
     "eslint": "^9.5.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-deprecation": "^3.0.0",
@@ -56,16 +54,12 @@
     "eslint-plugin-jsdoc": "^48.2.12",
     "eslint-plugin-sonarjs": "^1.0.3",
     "mocha": "^10.2.0",
-    "react": "^18.2.0",
     "semantic-release": "^23.0.0",
     "semantic-release-yarn": "^3.0.2",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "5.3.3",
     "typescript-eslint": "^7.13.0"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0"
   },
   "publishConfig": {
     "access": "public",
