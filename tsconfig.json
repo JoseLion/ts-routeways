@@ -31,8 +31,5 @@
     "dist/*",
     "docs/*",
     "node_modules/*"
-  ],
-  "ts-node": {
-    "transpileOnly": true
-  }
+  ]
 }
