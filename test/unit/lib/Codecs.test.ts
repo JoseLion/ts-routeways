@@ -1,6 +1,6 @@
 import { TypeFactories, expect } from "@assertive-ts/core";
 
-import { addCodec, Codec, Codecs, CodecsType } from "../../../src/lib/Codecs";
+import { type Codec, Codecs, type CodecsType, addCodec } from "../../../src/lib/Codecs";
 import { CodecDecodeError } from "../../../src/lib/errors/CodecDecodeError";
 import { CodecEncodeError } from "../../../src/lib/errors/CodecEncodeError";
 

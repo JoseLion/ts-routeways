@@ -3,6 +3,6 @@
   "extension": ["ts"],
   "recursive": true,
   "require": [
-    "tsx/cjs"
+    "tsx/esm"
   ]
 }

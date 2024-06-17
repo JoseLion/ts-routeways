@@ -1,8 +1,9 @@
 import { expect } from "@assertive-ts/core";
 
 import { Codecs } from "../../../../src/lib/Codecs";
-import { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../../src/lib/helpers/common";
-import { TestRoutes } from "../../../TestRoutes";
+
+import type { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../../src/lib/helpers/common";
+import type { TestRoutes } from "../../../TestRoutes";
 
 describe("[Unit] Commons.types.test.ts", () => {
   describe("PathLike", () => {
