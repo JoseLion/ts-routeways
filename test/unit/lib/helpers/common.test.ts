@@ -1,12 +1,13 @@
 import { expect } from "@assertive-ts/core";
+import { it, suite } from "vitest";
 
 import { Codecs } from "../../../../src/lib/Codecs";
 
 import type { CodecsToRecord, InferQueryParams, PathLike, RouteParams } from "../../../../src/lib/helpers/common";
 import type { TestRoutes } from "../../../TestRoutes";
 
-describe("[Unit] Commons.types.test.ts", () => {
-  describe("PathLike", () => {
+suite("[Unit] Commons.types.test.ts", () => {
+  suite("PathLike", () => {
     it("defines a string that starts with /", () => {
       const path: PathLike = "/foo";
 
@@ -14,7 +15,7 @@ describe("[Unit] Commons.types.test.ts", () => {
     });
   });
 
-  describe("CodecsToRecord<T>", () => {
+  suite("CodecsToRecord<T>", () => {
     it("transforms a record of codecs to a recors of the codec's types", () => {
       const codecs = { x: Codecs.Boolean, y: Codecs.Number, z: Codecs.String };
       const result: CodecsToRecord<typeof codecs> = {
@@ -27,7 +28,7 @@ describe("[Unit] Commons.types.test.ts", () => {
     });
   });
 
-  describe("RouteParams<V, Q>", () => {
+  suite("RouteParams<V, Q>", () => {
     it("defines an object of both path variables and quuery params based on V and Q", () => {
       const pathVars = { id: Codecs.Number };
       const queryParams = { page: Codecs.Number, sort: Codecs.String, zod: Codecs.Boolean };
@@ -41,7 +42,7 @@ describe("[Unit] Commons.types.test.ts", () => {
     });
   });
 
-  describe("InferQueryParams<R>", () => {
+  suite("InferQueryParams<R>", () => {
     it("describes the query params type of the R route", () => {
       const queryParams: InferQueryParams<typeof TestRoutes.static1> = {
         page: 1,

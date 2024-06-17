@@ -1,4 +1,5 @@
 import { TypeFactories, expect } from "@assertive-ts/core";
+import { describe, it, suite } from "vitest";
 
 import { type Codec, Codecs, type CodecsType, addCodec } from "../../../src/lib/Codecs";
 import { CodecDecodeError } from "../../../src/lib/errors/CodecDecodeError";
@@ -11,15 +12,15 @@ interface CodecsWithFoo extends CodecsType {
 
 type ArrayVariant = [string, Codec<string | number>, string, Array<string | number>];
 
-describe("[Unit] Codecs.test.ts", () => {
-  describe("#Boolean", () => {
+suite("[Unit] Codecs.test.ts", () => {
+  suite("#Boolean", () => {
     const variants = [
       ["true", true],
       ["false", false],
     ] as const;
 
-    describe(".decode", () => {
-      context("when the string is either 'true' or 'false'", () => {
+    suite(".decode", () => {
+      describe("when the string is either 'true' or 'false'", () => {
         variants.forEach(([text, bool]) => {
           it(`[${text}] returns its boolean value`, () => {
             const decoded = Codecs.Boolean.decode(text);
@@ -29,7 +30,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not either 'true' nor 'false'", () => {
+      describe("when the string is not either 'true' nor 'false'", () => {
         it("throws a CodecDecodeError", () => {
           expect(() => Codecs.Boolean.decode("some"))
             .toThrowError(CodecDecodeError)
@@ -38,8 +39,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is a boolean", () => {
+    suite(".encode", () => {
+      describe("when the value is a boolean", () => {
         variants.forEach((([str, bool]) => {
           it(`[${bool}] returns its string representation`, () => {
             const encoded = Codecs.Boolean.encode(bool);
@@ -49,7 +50,7 @@ describe("[Unit] Codecs.test.ts", () => {
         }));
       });
 
-      context("when the value is not a boolean", () => {
+      describe("when the value is not a boolean", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.Boolean.encode("some" as unknown as boolean))
             .toThrowError(CodecEncodeError)
@@ -59,9 +60,9 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe("#Date", () => {
-    describe(".decode", () => {
-      context("when the string is a valid date format", () => {
+  suite("#Date", () => {
+    suite(".decode", () => {
+      describe("when the string is a valid date format", () => {
         const variants = [
           ["RFC2822", "Tue Apr 05 2022 18:30:15.150 GMT-0500"],
           ["ISO", "2022-04-05T18:30:15.150-05:00"],
@@ -77,7 +78,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not a valid date format", () => {
+      describe("when the string is not a valid date format", () => {
         it("throws a CodecDecodeError", () => {
           expect(() => Codecs.Date.decode("foo"))
             .toThrowError(CodecDecodeError)
@@ -86,8 +87,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is a date", () => {
+    suite(".encode", () => {
+      describe("when the value is a date", () => {
         it("returns its UTC string representation", () => {
           const encoded = Codecs.Date.encode(new Date("2022-04-05T18:30:15.150-05:00"));
 
@@ -95,7 +96,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not a date", () => {
+      describe("when the value is not a date", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.Date.encode("some" as unknown as Date))
             .toThrowError(CodecEncodeError)
@@ -105,7 +106,7 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe("#Number", () => {
+  suite("#Number", () => {
     const variants = [
       ["integer", "10", 10],
       ["negative", "-20", -20],
@@ -115,8 +116,8 @@ describe("[Unit] Codecs.test.ts", () => {
       ["negative infinity", "-Infinity", -Infinity],
     ] as const;
 
-    describe(".decode", () => {
-      context("when the string is a valid number", () => {
+    suite(".decode", () => {
+      describe("when the string is a valid number", () => {
         variants.forEach(([variant, text, num]) => {
           it(`[${variant}] returns its number value`, () => {
             const decoded = Codecs.Number.decode(text);
@@ -126,7 +127,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not a valid number", () => {
+      describe("when the string is not a valid number", () => {
         const invalidVariants = [
           ["empty string", ""],
           ["non numeric", "foo"],
@@ -142,8 +143,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("whent the value is a number", () => {
+    suite(".encode", () => {
+      describe("whent the value is a number", () => {
         variants.forEach(([variant, text, num]) => {
           it(`[${variant}] returns its string representation`, () => {
             const encoded = Codecs.Number.encode(num);
@@ -153,7 +154,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not a number", () => {
+      describe("when the value is not a number", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.Number.encode("some" as unknown as number))
             .toThrowError(CodecEncodeError)
@@ -163,8 +164,8 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe("#String", () => {
-    describe(".decode", () => {
+  suite("#String", () => {
+    suite(".decode", () => {
       it("returns the same string", () => {
         const decoded = Codecs.String.decode("foo");
 
@@ -172,8 +173,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is a string", () => {
+    suite(".encode", () => {
+      describe("when the value is a string", () => {
         it("returns the same string value", () => {
           const encoded = Codecs.String.encode("foo");
 
@@ -181,7 +182,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not a string", () => {
+      describe("when the value is not a string", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.String.encode({ foo: 1 } as unknown as string))
             .toThrowError(CodecEncodeError)
@@ -191,7 +192,7 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".array", () => {
+  suite(".array", () => {
     const jsonVariants: ArrayVariant[] = [
       ["empty array", Codecs.String, "", []],
       ["1 empty str", Codecs.String, "[]", [""]],
@@ -221,9 +222,9 @@ describe("[Unit] Codecs.test.ts", () => {
       ["non-empty", Codecs.Number, "?x[]=1&x[]=2&x[]=3", [1, 2, 3]],
     ];
 
-    describe(".decode", () => {
-      context("when the format is 'json'", () => {
-        context("and the format is valid", () => {
+    suite(".decode", () => {
+      describe("when the format is 'json'", () => {
+        describe("and the format is valid", () => {
           jsonVariants.forEach(([desc, inner, text, array]) => {
             it(`[Text: ${desc}] returns the decoded array`, () => {
               const decoded = Codecs.array(inner, { format: "json" }).decode(text);
@@ -233,7 +234,7 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the format is invalid", () => {
+        describe("and the format is invalid", () => {
           it("throws a CodecDecodeError", () => {
             expect(() => Codecs.array(Codecs.Number).decode("1,2,3"))
               .toThrowError(CodecDecodeError)
@@ -242,8 +243,8 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the format is 'delimited'", () => {
-        context("and the default delimiter is used", () => {
+      describe("when the format is 'delimited'", () => {
+        describe("and the default delimiter is used", () => {
           delimitedVariants.forEach(([desc, inner, text, array]) => {
             it(`[Text: ${desc}] returns the decoded array using commas as delimiter`, () => {
               const decoded = Codecs.array(inner, { format: "delimited" }).decode(text);
@@ -253,7 +254,7 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the delimiter is changed", () => {
+        describe("and the delimiter is changed", () => {
           it("returns the decoded array based on the new delimter", () => {
             const text = "true_false_true_false";
             const decoded = Codecs.array(Codecs.Boolean, { delimiter: "_", format: "delimited" }).decode(text);
@@ -263,7 +264,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the format is 'repeat-key'", () => {
+      describe("when the format is 'repeat-key'", () => {
         repeatVariants.forEach(([desc, inner, search, array]) => {
           it(`[Text: ${desc}] returns the decoded array`, () => {
             const decoded = Codecs.array(inner, { format: "repeat-key" }).decode("", { key: "x", search });
@@ -273,7 +274,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the format is 'key-square-brackets'", () => {
+      describe("when the format is 'key-square-brackets'", () => {
         bracketsVariants.forEach(([desc, inner, search, array]) => {
           it(`[Text: ${desc}] returns the decoded array`, () => {
             const decoded = Codecs.array(inner, { format: "key-square-brackets" }).decode("", { key: "x", search });
@@ -284,9 +285,9 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is an array", () => {
-        context("and the array is empty", () => {
+    suite(".encode", () => {
+      describe("when the value is an array", () => {
+        describe("and the array is empty", () => {
           it("returns an empty string", () => {
             const encoded = Codecs.array(Codecs.String).encode([]);
 
@@ -294,7 +295,7 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the format is 'json'", () => {
+        describe("and the format is 'json'", () => {
           jsonVariants.forEach(([desc, inner, text, array]) => {
             it(`[Array: ${desc}] returns the string representation of the array`, () => {
               const encoded = Codecs.array(inner, { format: "json" }).encode(array);
@@ -304,8 +305,8 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the format is 'delimited'", () => {
-          context("and the default delimiter is used", () => {
+        describe("and the format is 'delimited'", () => {
+          describe("and the default delimiter is used", () => {
             delimitedVariants.forEach(([desc, inner, text, array]) => {
               it(`[Array: ${desc}] returns the string representation of the array`, () => {
                 const encoded = Codecs.array(inner, { format: "delimited" }).encode(array);
@@ -315,7 +316,7 @@ describe("[Unit] Codecs.test.ts", () => {
             });
           });
 
-          context("and the delimiter is changed", () => {
+          describe("and the delimiter is changed", () => {
             it("returns the decoded array based on the new delimter", () => {
               const array = [true, false, true, false];
               const encoded = Codecs.array(Codecs.Boolean, { delimiter: "_", format: "delimited" }).encode(array);
@@ -325,7 +326,7 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the format is 'repeat-key'", () => {
+        describe("and the format is 'repeat-key'", () => {
           repeatVariants.forEach(([desc, inner, text, array]) => {
             it(`[Array: ${desc}] returns the search string representation of the array`, () => {
               const encoded = Codecs.array(inner, { format: "repeat-key" }).encode(array, "x");
@@ -335,7 +336,7 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the format is 'key-square-brackets'", () => {
+        describe("and the format is 'key-square-brackets'", () => {
           bracketsVariants.forEach(([desc, inner, text, array]) => {
             it(`[Array: ${desc}] returns the search string representation of the array`, () => {
               const encoded = Codecs.array(inner, { format: "key-square-brackets" }).encode(array, "x");
@@ -346,7 +347,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not an array", () => {
+      describe("when the value is not an array", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.array(Codecs.Number).encode({ } as unknown as number[]))
             .toThrowError(CodecEncodeError)
@@ -356,10 +357,10 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".numberLiteral", () => {
-    describe(".decode", () => {
-      context("when the string is a valid number", () => {
-        context("and the number is one of the codec literals", () => {
+  suite(".numberLiteral", () => {
+    suite(".decode", () => {
+      describe("when the string is a valid number", () => {
+        describe("and the number is one of the codec literals", () => {
           it("returns its number literal value", () => {
             const decoded = Codecs.numberLiteral(1, 2, 3).decode("2");
 
@@ -367,7 +368,7 @@ describe("[Unit] Codecs.test.ts", () => {
           });
         });
 
-        context("and the number is not one of the codec literals", () => {
+        describe("and the number is not one of the codec literals", () => {
           it("throws a CodecDecodeError", () => {
             expect(() => Codecs.numberLiteral(1, 2, 3).decode("5"))
               .toThrowError(CodecDecodeError)
@@ -376,7 +377,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not a valid number", () => {
+      describe("when the string is not a valid number", () => {
         it("throws the Number's CodecDecodeError", () => {
           expect(() => Codecs.numberLiteral(1, 2, 3).decode("foo"))
             .toThrowError(CodecDecodeError)
@@ -385,8 +386,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is one of the codec literals", () => {
+    suite(".encode", () => {
+      describe("when the value is one of the codec literals", () => {
         it("returns its string representation", () => {
           const encoded = Codecs.numberLiteral(1, 2, 3).encode(2);
 
@@ -394,7 +395,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not one of the codec literals", () => {
+      describe("when the value is not one of the codec literals", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.numberLiteral(1, 2, 3).encode(5 as unknown as 1))
             .toThrowError(CodecEncodeError)
@@ -404,9 +405,9 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".null", () => {
-    describe(".decode", () => {
-      context("when the string is exactly 'null'", () => {
+  suite(".null", () => {
+    suite(".decode", () => {
+      describe("when the string is exactly 'null'", () => {
         it("returns null as the value", () => {
           const decoded = Codecs.null(Codecs.String).decode("null");
 
@@ -414,7 +415,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is valid for the inner codec", () => {
+      describe("when the string is valid for the inner codec", () => {
         it("returns the inner codec decoded value", () => {
           const decoded = Codecs.null(Codecs.Boolean).decode("true");
 
@@ -422,7 +423,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not valid for the inner codec", () => {
+      describe("when the string is not valid for the inner codec", () => {
         it("throws the inner CodecDecodeError", () => {
           expect(() => Codecs.null(Codecs.Boolean).decode("foo"))
             .toThrowError(CodecDecodeError)
@@ -431,8 +432,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is null", () => {
+    suite(".encode", () => {
+      describe("when the value is null", () => {
         it("returns exactly 'null'", () => {
           const encoded = Codecs.null(Codecs.String).encode(null);
 
@@ -440,7 +441,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is valid for the inner codec", () => {
+      describe("when the value is valid for the inner codec", () => {
         it("returns the inner codec encoded value", () => {
           const encoded = Codecs.null(Codecs.Boolean).encode(true);
 
@@ -448,7 +449,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not valid for the inner codec", () => {
+      describe("when the value is not valid for the inner codec", () => {
         it("throws the inner CodecEncodeError", () => {
           expect(() => Codecs.null(Codecs.Boolean).encode("foo" as unknown as boolean))
             .toThrowError(CodecEncodeError)
@@ -458,9 +459,9 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".nullish", () => {
-    describe(".decode", () => {
-      context("when the string is exactly 'null'", () => {
+  suite(".nullish", () => {
+    suite(".decode", () => {
+      describe("when the string is exactly 'null'", () => {
         it("returns null as the value", () => {
           const decoded = Codecs.nullish(Codecs.String).decode("null");
 
@@ -468,7 +469,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is exactly 'undefined'", () => {
+      describe("when the string is exactly 'undefined'", () => {
         it("returns undefined as the value", () => {
           const decoded = Codecs.nullish(Codecs.String).decode("undefined");
 
@@ -476,7 +477,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is valid for the inner codec", () => {
+      describe("when the string is valid for the inner codec", () => {
         it("returns the inner codec decoded value", () => {
           const decoded = Codecs.nullish(Codecs.Boolean).decode("true");
 
@@ -484,7 +485,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not valid for the inner codec", () => {
+      describe("when the string is not valid for the inner codec", () => {
         it("throws the inner CodecDecodeError", () => {
           expect(() => Codecs.nullish(Codecs.Boolean).decode("foo"))
             .toThrowError(CodecDecodeError)
@@ -493,8 +494,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is null", () => {
+    suite(".encode", () => {
+      describe("when the value is null", () => {
         it("returns exactly 'null'", () => {
           const encoded = Codecs.nullish(Codecs.String).encode(null);
 
@@ -502,7 +503,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is undefined", () => {
+      describe("when the value is undefined", () => {
         it("returns exactly 'undefined'", () => {
           const encoded = Codecs.nullish(Codecs.String).encode(undefined);
 
@@ -510,7 +511,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is valid for the inner codec", () => {
+      describe("when the value is valid for the inner codec", () => {
         it("returns the inner codec encoded value", () => {
           const encoded = Codecs.nullish(Codecs.Boolean).encode(true);
 
@@ -518,7 +519,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not valid for the inner codec", () => {
+      describe("when the value is not valid for the inner codec", () => {
         it("throws the inner CodecEncodeError", () => {
           expect(() => Codecs.nullish(Codecs.Boolean).encode("foo" as unknown as boolean))
             .toThrowError(CodecEncodeError)
@@ -528,9 +529,9 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".stringLiteral", () => {
-    describe(".decode", () => {
-      context("when the string is one of the codec literals", () => {
+  suite(".stringLiteral", () => {
+    suite(".decode", () => {
+      describe("when the string is one of the codec literals", () => {
         it("returns its string literal value", () => {
           const decoded = Codecs.stringLiteral("foo", "bar", "baz").decode("foo");
 
@@ -538,7 +539,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not one of the codec literals", () => {
+      describe("when the string is not one of the codec literals", () => {
         it("throws a CodecDecodeError", () => {
           expect(() => Codecs.stringLiteral("foo", "bar", "baz").decode("fizz"))
             .toThrowError(CodecDecodeError)
@@ -547,8 +548,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is one of the codec literals", () => {
+    suite(".encode", () => {
+      describe("when the value is one of the codec literals", () => {
         it("returns the literal as a string", () => {
           const encoded = Codecs.stringLiteral("foo", "bar", "baz").encode("baz");
 
@@ -556,7 +557,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not one of the codec literals", () => {
+      describe("when the value is not one of the codec literals", () => {
         it("throws a CodecEncodeError", () => {
           expect(() => Codecs.stringLiteral("foo", "bar", "baz").encode("fizz" as unknown as "foo"))
             .toThrowError(CodecEncodeError)
@@ -566,9 +567,9 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".undefined", () => {
-    describe(".decode", () => {
-      context("when the string is exactly 'undefined'", () => {
+  suite(".undefined", () => {
+    suite(".decode", () => {
+      describe("when the string is exactly 'undefined'", () => {
         it("returns undefined as the value", () => {
           const decoded = Codecs.undefined(Codecs.String).decode("undefined");
 
@@ -576,7 +577,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is valid for the inner codec", () => {
+      describe("when the string is valid for the inner codec", () => {
         it("returns the inner codec decoded value", () => {
           const decoded = Codecs.undefined(Codecs.Boolean).decode("false");
 
@@ -584,7 +585,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the string is not valid for the inner codec", () => {
+      describe("when the string is not valid for the inner codec", () => {
         it("throws the inner CodecDecodeError", () => {
           expect(() => Codecs.undefined(Codecs.Boolean).decode("foo"))
             .toThrowError(CodecDecodeError)
@@ -593,8 +594,8 @@ describe("[Unit] Codecs.test.ts", () => {
       });
     });
 
-    describe(".encode", () => {
-      context("when the value is undefined", () => {
+    suite(".encode", () => {
+      describe("when the value is undefined", () => {
         it("returns exactly 'undefined'", () => {
           const encoded = Codecs.undefined(Codecs.String).encode(undefined);
 
@@ -602,7 +603,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is valid for the inner codec", () => {
+      describe("when the value is valid for the inner codec", () => {
         it("returns the inner codec encoded value", () => {
           const encoded = Codecs.undefined(Codecs.Boolean).encode(false);
 
@@ -610,7 +611,7 @@ describe("[Unit] Codecs.test.ts", () => {
         });
       });
 
-      context("when the value is not valid for the inner codec", () => {
+      describe("when the value is not valid for the inner codec", () => {
         it("throws the inner CodecEncodeError", () => {
           expect(() => Codecs.undefined(Codecs.Boolean).encode("foo" as unknown as boolean))
             .toThrowError(CodecEncodeError)
@@ -620,7 +621,7 @@ describe("[Unit] Codecs.test.ts", () => {
     });
   });
 
-  describe(".addCodec", () => {
+  suite(".addCodec", () => {
     it("adds the codec with it's name to the Codec object", () => {
       const codec: Codec<"foo"> = {
         decode: () => "foo",

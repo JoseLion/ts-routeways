@@ -1,4 +1,5 @@
 import { expect } from "@assertive-ts/core";
+import { describe, it, suite } from "vitest";
 
 import { Codecs } from "../../../src/lib/Codecs";
 import { UrlParserError } from "../../../src/lib/errors/UrlParserError";
@@ -14,10 +15,10 @@ function captureError<E extends Error>(operation: () => unknown): E {
   }
 }
 
-describe("[Unit] SafeRouter.test.ts", () => {
-  describe(".$config", () => {
-    describe("#pathVars", () => {
-      context("when the route has no path variables", () => {
+suite("[Unit] SafeRouter.test.ts", () => {
+  suite(".$config", () => {
+    suite("#pathVars", () => {
+      describe("when the route has no path variables", () => {
         it("returns an empty object", () => {
           expect(TestRoutes.home.$config().pathVars).toBeEqual({ });
           expect(TestRoutes.users.view.$config().pathVars).toBeEqual({ });
@@ -25,7 +26,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
         });
       });
 
-      context("when the route has path variables", () => {
+      describe("when the route has path variables", () => {
         it("returns an object with the accumulated path variables", () => {
           expect(TestRoutes.library.$config().pathVars).toBeEqual({ libId: Codecs.Number });
           expect(TestRoutes.library.about.$config().pathVars).toBeEqual({ libId: Codecs.Number, tab: Codecs.String });
@@ -44,8 +45,8 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    describe("#queryParams", () => {
-      context("when the route has no query parameters", () => {
+    suite("#queryParams", () => {
+      describe("when the route has no query parameters", () => {
         it("returns an empty object", () => {
           expect(TestRoutes.home.$config().queryParams).toBeEqual({ });
           expect(TestRoutes.users.view.$config().queryParams).toBeEqual({ });
@@ -53,7 +54,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
         });
       });
 
-      context("when the route has query parameters", () => {
+      describe("when the route has query parameters", () => {
         it("returns only the segment query parameters", () => {
           expect(TestRoutes.library.$config().queryParams).toBeEqual({ limit: Codecs.Boolean, page: Codecs.Number });
           expect(TestRoutes.library.author.$config().queryParams).toBeEqual({ tab: Codecs.String });
@@ -62,7 +63,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    describe("#segment", () => {
+    suite("#segment", () => {
       it("returns the segment of the route", () => {
         expect(TestRoutes.home.$config().segment).toBeEqual("/home");
         expect(TestRoutes.users.view.$config().segment).toBeEqual("/view");
@@ -74,7 +75,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    describe("#subRoutes", () => {
+    suite("#subRoutes", () => {
       it("returns the subroutes of the route", () => {
         const subRoutes1 = TestRoutes.home.$config().subRoutes;
         const subRoutes2 = TestRoutes.users.$config().subRoutes;
@@ -89,8 +90,8 @@ describe("[Unit] SafeRouter.test.ts", () => {
     });
   });
 
-  describe(".makeUrl", () => {
-    context("when the route has no path variable nor query parameters", () => {
+  suite(".makeUrl", () => {
+    describe("when the route has no path variable nor query parameters", () => {
       it("returns the full path", () => {
         const fullpath = TestRoutes.users.edit.profile.makeUrl();
 
@@ -98,7 +99,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    context("when the route has path variables", () => {
+    describe("when the route has path variables", () => {
       it("returns the full path replacing all path variables", () => {
         const fullpath1 = TestRoutes.library.makeUrl({ libId: 1 });
         const fullpath2 = TestRoutes.library.author.makeUrl({
@@ -124,7 +125,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    context("when the route has query parameters", () => {
+    describe("when the route has query parameters", () => {
       it("eturns the full path appending the query string", () => {
         const fullpath1 = TestRoutes.static1.makeUrl({
           page: 3,
@@ -143,7 +144,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    context("when the route has both path variables and query parameters", () => {
+    describe("when the route has both path variables and query parameters", () => {
       it("returns the full path replacing all path variables and appending the query string", () => {
         const fullpath1 = TestRoutes.library.makeUrl({
           libId: 1,
@@ -169,9 +170,9 @@ describe("[Unit] SafeRouter.test.ts", () => {
     });
   });
 
-  describe(".parseUrl", () => {
-    context("when the URL matches the route template", () => {
-      context("and the URL has no path variables nor query parameters", () => {
+  suite(".parseUrl", () => {
+    describe("when the URL matches the route template", () => {
+      describe("and the URL has no path variables nor query parameters", () => {
         it("returns empty objects for both pathVars and queryParams", () => {
           const { pathVars, queryParams } = TestRoutes.users.edit.profile.parseUrl("/users/edit/profile");
 
@@ -180,7 +181,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
         });
       });
 
-      context("and the URL has path variables", () => {
+      describe("and the URL has path variables", () => {
         it("decodes the path variables into pathVars", () => {
           const route1 = TestRoutes.library.parseUrl("/library/3");
           const route2 = TestRoutes.library.author.parseUrl("/library/3/author/1");
@@ -196,7 +197,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
         });
       });
 
-      context("and the URL has query parameters", () => {
+      describe("and the URL has query parameters", () => {
         it("decodes the query parameters into queryParams ignoring any not defined", () => {
           const route1 = TestRoutes.static1.parseUrl("/static1?page=3&search=%5Bone%2Ctwo%2Cthree%5D&size=50&other=x");
           const route2 = TestRoutes.level1.static2.parseUrl("/level1/static2?foo=true&some=hello%20world!");
@@ -210,7 +211,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
         });
       });
 
-      context("and the URL has both path variables and query parameters", () => {
+      describe("and the URL has both path variables and query parameters", () => {
         it("decodes the path variables into pathVars and the query parameters into queryParams", () => {
           const route1 = TestRoutes.library.parseUrl("/library/1?limit=true&page=3");
           const route2 = TestRoutes.library.author.parseUrl("/library/1/author/4?tab=info");
@@ -232,7 +233,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
       });
     });
 
-    context("when the url does not match the route template", () => {
+    describe("when the url does not match the route template", () => {
       const variants = [
         ["Level 1", TestRoutes.users, "/foo"],
         ["Level 2", TestRoutes.users.edit, "/users/foo"],
@@ -254,7 +255,7 @@ describe("[Unit] SafeRouter.test.ts", () => {
     });
   });
 
-  describe(".template", () => {
+  suite(".template", () => {
     it("returns the full path of the route", () => {
       expect(TestRoutes.home.template()).toBeEqual("/home");
       expect(TestRoutes.users.view.template()).toBeEqual("/users/view");
