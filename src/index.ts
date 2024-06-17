@@ -1,24 +1,18 @@
-import { Routeway, RoutewaysBuilder } from "./lib/Routeways";
+import { type Routeway, RoutewaysBuilder } from "./lib/Routeways";
 
-export {
-  addCodec,
-  ArrayCodecOptions,
-  Codec,
-  Codecs,
-  CodecsType,
-  DecodeQuery,
-} from "./lib/Codecs";
+export type { ArrayCodecOptions, Codec, CodecsType, DecodeQuery } from "./lib/Codecs";
+export { addCodec, Codecs } from "./lib/Codecs";
 export { CodecDecodeError } from "./lib/errors/CodecDecodeError";
 export { CodecEncodeError } from "./lib/errors/CodecEncodeError";
 export { UrlParserError } from "./lib/errors/UrlParserError";
-export {
+export type {
   CodecMap,
   CodecsToRecord,
   InferQueryParams,
   PathLike,
   RouteParams,
 } from "./lib/helpers/common";
-export { Routeway } from "./lib/Routeways";
+export type { Routeway } from "./lib/Routeways";
 
 /**
  * Creates a `Routeways` builder instance. Use this instance to start defining

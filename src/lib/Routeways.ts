@@ -1,12 +1,13 @@
-import { Codec } from "./Codecs";
 import { UrlParserError } from "./errors/UrlParserError";
 import {
-  CodecMap,
-  CodecsToRecord,
-  PathLike,
-  RouteParams,
+  type CodecMap,
+  type CodecsToRecord,
+  type PathLike,
+  type RouteParams,
   safeKeys,
 } from "./helpers/common";
+
+import type { Codec } from "./Codecs";
 
 /**
  * Recursively creates a union of string literals from a {@link PathLike}
