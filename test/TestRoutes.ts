@@ -1,5 +1,5 @@
-import { Routeways } from "../src";
 import { Codecs } from "../src/lib/Codecs";
+import { Routeways } from "../src/main";
 
 export const TestRoutes = Routeways()
   .path({ name: "home", path: "/home" })

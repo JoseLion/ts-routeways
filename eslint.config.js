@@ -58,7 +58,7 @@ export default eslintTs.config(
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
       parserOptions: {
-        ecmaVersion: 2023,
+        ecmaVersion: 2024,
         project,
         tsconfigRootDir: import.meta.dirname,
       },

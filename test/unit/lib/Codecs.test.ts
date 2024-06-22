@@ -14,19 +14,15 @@ type ArrayVariant = [string, Codec<string | number>, string, Array<string | numb
 
 suite("[Unit] Codecs.test.ts", () => {
   suite("#Boolean", () => {
-    const variants = [
-      ["true", true],
-      ["false", false],
-    ] as const;
-
     suite(".decode", () => {
       describe("when the string is either 'true' or 'false'", () => {
-        variants.forEach(([text, bool]) => {
-          it(`[${text}] returns its boolean value`, () => {
-            const decoded = Codecs.Boolean.decode(text);
+        it.each([
+          ["true", true],
+          ["false", false],
+        ])("[%s] returns its boolean value", (text, bool) => {
+          const decoded = Codecs.Boolean.decode(text);
 
-            expect(decoded).toBeEqual(bool);
-          });
+          expect(decoded).toBeEqual(bool);
         });
       });
 
@@ -41,13 +37,14 @@ suite("[Unit] Codecs.test.ts", () => {
 
     suite(".encode", () => {
       describe("when the value is a boolean", () => {
-        variants.forEach((([str, bool]) => {
-          it(`[${bool}] returns its string representation`, () => {
-            const encoded = Codecs.Boolean.encode(bool);
+        it.each([
+          [true, "true"],
+          [false, "false"],
+        ])("[%s] returns its string representation", (bool, text) => {
+          const encoded = Codecs.Boolean.encode(bool);
 
-            expect(encoded).toBeEqual(str);
-          });
-        }));
+          expect(encoded).toBeEqual(text);
+        });
       });
 
       describe("when the value is not a boolean", () => {
@@ -63,18 +60,14 @@ suite("[Unit] Codecs.test.ts", () => {
   suite("#Date", () => {
     suite(".decode", () => {
       describe("when the string is a valid date format", () => {
-        const variants = [
+        it.each([
           ["RFC2822", "Tue Apr 05 2022 18:30:15.150 GMT-0500"],
           ["ISO", "2022-04-05T18:30:15.150-05:00"],
           ["UTC", "2022-04-05T23:30:15.150Z"],
-        ] as const;
+        ])("[%s] returns its date value", (_, text) => {
+          const decoded = Codecs.Date.decode(text);
 
-        variants.forEach(([format, text]) => {
-          it(`[${format}] returns its date value`, () => {
-            const decoded = Codecs.Date.decode(text);
-
-            expect(decoded).toBeEqual(new Date("2022-04-05T23:30:15.150Z"));
-          });
+          expect(decoded).toBeEqual(new Date("2022-04-05T23:30:15.150Z"));
         });
       });
 
@@ -107,50 +100,47 @@ suite("[Unit] Codecs.test.ts", () => {
   });
 
   suite("#Number", () => {
-    const variants = [
-      ["integer", "10", 10],
-      ["negative", "-20", -20],
-      ["decimal", "0.5", 0.5],
-      ["negative decimal", "-0.1", -0.1],
-      ["infinity", "Infinity", Infinity],
-      ["negative infinity", "-Infinity", -Infinity],
-    ] as const;
-
     suite(".decode", () => {
       describe("when the string is a valid number", () => {
-        variants.forEach(([variant, text, num]) => {
-          it(`[${variant}] returns its number value`, () => {
-            const decoded = Codecs.Number.decode(text);
+        it.each([
+          ["integer", "10", 10],
+          ["negative", "-20", -20],
+          ["decimal", "0.5", 0.5],
+          ["negative decimal", "-0.1", -0.1],
+          ["infinity", "Infinity", Infinity],
+          ["negative infinity", "-Infinity", -Infinity],
+        ])("[%s] returns its number value", (_, text, num) => {
+          const decoded = Codecs.Number.decode(text);
 
-            expect(decoded).toBeEqual(num);
-          });
+          expect(decoded).toBeEqual(num);
         });
       });
 
       describe("when the string is not a valid number", () => {
-        const invalidVariants = [
+        it.each([
           ["empty string", ""],
           ["non numeric", "foo"],
-        ] as const;
-
-        invalidVariants.forEach(([variant, text]) => {
-          it(`[${variant}] throws a CodecDecodeError`, () => {
-            expect(() => Codecs.Number.decode(text))
-              .toThrowError(CodecDecodeError)
-              .toHaveMessage(`Number values must be numeric only. Got "${text}" instead`);
-          });
+        ])("[%s] throws a CodecDecodeError", (_, text) => {
+          expect(() => Codecs.Number.decode(text))
+            .toThrowError(CodecDecodeError)
+            .toHaveMessage(`Number values must be numeric only. Got "${text}" instead`);
         });
       });
     });
 
     suite(".encode", () => {
       describe("whent the value is a number", () => {
-        variants.forEach(([variant, text, num]) => {
-          it(`[${variant}] returns its string representation`, () => {
-            const encoded = Codecs.Number.encode(num);
+        it.each([
+          ["integer", "10", 10],
+          ["negative", "-20", -20],
+          ["decimal", "0.5", 0.5],
+          ["negative decimal", "-0.1", -0.1],
+          ["infinity", "Infinity", Infinity],
+          ["negative infinity", "-Infinity", -Infinity],
+        ])("[%s] returns its string representation", (_, text, num) => {
+          const encoded = Codecs.Number.encode(num);
 
-            expect(encoded).toBeEqual(text);
-          });
+          expect(encoded).toBeEqual(text);
         });
       });
 
@@ -225,12 +215,10 @@ suite("[Unit] Codecs.test.ts", () => {
     suite(".decode", () => {
       describe("when the format is 'json'", () => {
         describe("and the format is valid", () => {
-          jsonVariants.forEach(([desc, inner, text, array]) => {
-            it(`[Text: ${desc}] returns the decoded array`, () => {
-              const decoded = Codecs.array(inner, { format: "json" }).decode(text);
+          it.each(jsonVariants)("[Text: %s] returns the decoded array", (_, inner, text, array) => {
+            const decoded = Codecs.array(inner, { format: "json" }).decode(text);
 
-              expect(decoded).toBeEqual(array);
-            });
+            expect(decoded).toBeEqual(array);
           });
         });
 
@@ -245,13 +233,14 @@ suite("[Unit] Codecs.test.ts", () => {
 
       describe("when the format is 'delimited'", () => {
         describe("and the default delimiter is used", () => {
-          delimitedVariants.forEach(([desc, inner, text, array]) => {
-            it(`[Text: ${desc}] returns the decoded array using commas as delimiter`, () => {
+          it.each(delimitedVariants)(
+            "[Text: %s] returns the decoded array using commas as delimiter",
+            (_, inner, text, array) => {
               const decoded = Codecs.array(inner, { format: "delimited" }).decode(text);
 
               expect(decoded).toBeEqual(array);
-            });
-          });
+            },
+          );
         });
 
         describe("and the delimiter is changed", () => {
@@ -265,22 +254,18 @@ suite("[Unit] Codecs.test.ts", () => {
       });
 
       describe("when the format is 'repeat-key'", () => {
-        repeatVariants.forEach(([desc, inner, search, array]) => {
-          it(`[Text: ${desc}] returns the decoded array`, () => {
-            const decoded = Codecs.array(inner, { format: "repeat-key" }).decode("", { key: "x", search });
+        it.each(repeatVariants)("[Text: %s] returns the decoded array", (_, inner, search, array) => {
+          const decoded = Codecs.array(inner, { format: "repeat-key" }).decode("", { key: "x", search });
 
-            expect(decoded).toBeEqual(array);
-          });
+          expect(decoded).toBeEqual(array);
         });
       });
 
       describe("when the format is 'key-square-brackets'", () => {
-        bracketsVariants.forEach(([desc, inner, search, array]) => {
-          it(`[Text: ${desc}] returns the decoded array`, () => {
-            const decoded = Codecs.array(inner, { format: "key-square-brackets" }).decode("", { key: "x", search });
+        it.each(bracketsVariants)("[Text: %s] returns the decoded array", (_, inner, search, array) => {
+          const decoded = Codecs.array(inner, { format: "key-square-brackets" }).decode("", { key: "x", search });
 
-            expect(decoded).toBeEqual(array);
-          });
+          expect(decoded).toBeEqual(array);
         });
       });
     });
@@ -296,24 +281,26 @@ suite("[Unit] Codecs.test.ts", () => {
         });
 
         describe("and the format is 'json'", () => {
-          jsonVariants.forEach(([desc, inner, text, array]) => {
-            it(`[Array: ${desc}] returns the string representation of the array`, () => {
+          it.each(jsonVariants)(
+            "[Array: %s] returns the string representation of the array",
+            (_, inner, text, array) => {
               const encoded = Codecs.array(inner, { format: "json" }).encode(array);
 
               expect(encoded).toBeEqual(text);
-            });
-          });
+            },
+          );
         });
 
         describe("and the format is 'delimited'", () => {
           describe("and the default delimiter is used", () => {
-            delimitedVariants.forEach(([desc, inner, text, array]) => {
-              it(`[Array: ${desc}] returns the string representation of the array`, () => {
-                const encoded = Codecs.array(inner, { format: "delimited" }).encode(array);
+            it.each(delimitedVariants)(
+              "[Array: %s] returns the string representation of the array",
+              (_, inner, text, array) => {
+              const encoded = Codecs.array(inner, { format: "delimited" }).encode(array);
 
-                expect(encoded).toBeEqual(text);
-              });
-            });
+              expect(encoded).toBeEqual(text);
+              },
+            );
           });
 
           describe("and the delimiter is changed", () => {
@@ -327,23 +314,25 @@ suite("[Unit] Codecs.test.ts", () => {
         });
 
         describe("and the format is 'repeat-key'", () => {
-          repeatVariants.forEach(([desc, inner, text, array]) => {
-            it(`[Array: ${desc}] returns the search string representation of the array`, () => {
+          it.each(repeatVariants)(
+            "[Array: %s] returns the search string representation of the array",
+            (_, inner, text, array) => {
               const encoded = Codecs.array(inner, { format: "repeat-key" }).encode(array, "x");
 
               expect(encoded).toBeEqual(text.replace("?", ""));
-            });
-          });
+            },
+          );
         });
 
         describe("and the format is 'key-square-brackets'", () => {
-          bracketsVariants.forEach(([desc, inner, text, array]) => {
-            it(`[Array: ${desc}] returns the search string representation of the array`, () => {
+          it.each(bracketsVariants)(
+            "[Array: %s] returns the search string representation of the array",
+            (_, inner, text, array) => {
               const encoded = Codecs.array(inner, { format: "key-square-brackets" }).encode(array, "x");
 
               expect(encoded).toBeEqual(text.replace("?", ""));
-            });
-          });
+            },
+          );
         });
       });
 

@@ -1,8 +1,8 @@
 import { expect } from "@assertive-ts/core";
 import { it, suite } from "vitest";
 
-import { Routeways } from "../../src";
 import { RoutewaysBuilder } from "../../src/lib/Routeways";
+import { Routeways } from "../../src/main";
 
 suite("[Unit] index.test.ts", () => {
   suite("Routeways", () => {

@@ -18,34 +18,31 @@
     "typescript"
   ],
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "source": "./src/main.ts",
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.js",
+  "unpkg": "./dist/main.umd.js",
+  "types": "./dist/main.d.ts",
   "sideEffects": false,
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      },
-      "default": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "import": "./dist/main.js",
+      "require": "./dist/main.cjs",
+      "types": "./dist/main.d.ts",
+      "default": "./dist/main.js"
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/",
-    "src/"
+    "./dist/",
+    "./src/",
+    "./package.json"
   ],
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "build": "yarn build:esm && yarn build:cjs",
-    "build:cjs": "tsc -p tsconfig.cjs.json && echo '{ \"type\": \"commonjs\" }' > ./dist/cjs/package.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "vite build",
     "check": "yarn compile && yarn lint && yarn test --run",
     "compile": "tsc -p tsconfig.json",
     "lint": "eslint .",
@@ -78,6 +75,8 @@
     "tslib": "^2.6.3",
     "typescript": "5.4.5",
     "typescript-eslint": "^7.13.1",
+    "vite": "^5.3.1",
+    "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
   },
   "publishConfig": {
