@@ -18,7 +18,7 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "./build/",
+    "outDir": "./build",
     "preserveConstEnums": true,
     "removeComments": false,
     "skipLibCheck": true,
@@ -30,10 +30,10 @@
     "verbatimModuleSyntax": true
   },
   "exclude": [
-    ".yarn/*",
-    "build/*",
-    "dist/*",
-    "docs/*",
-    "node_modules/*"
+    "./.yarn/**",
+    "./build/**",
+    "./dist/**",
+    "./docs/**",
+    "./node_modules/**"
   ]
 }

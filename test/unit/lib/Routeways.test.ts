@@ -234,23 +234,19 @@ suite("[Unit] SafeRouter.test.ts", () => {
     });
 
     describe("when the url does not match the route template", () => {
-      const variants = [
+      it.each([
         ["Level 1", TestRoutes.users, "/foo"],
         ["Level 2", TestRoutes.users.edit, "/users/foo"],
         ["Level 3", TestRoutes.users.edit.profile, "/edit/users/profile"],
         ["Smaller size", TestRoutes.users.edit.profile, "/users/edit"],
         ["Bigger size", TestRoutes.users.edit.profile, "/users/edit/profile/other"],
-      ] as const;
-
-      variants.forEach(([variant, route, url]) => {
-        it(`[${variant}] throws a UrlParserError`, () => {
-          const error = captureError(() => route.parseUrl(url));
+      ])("[%s] throws a UrlParserError", (_, route, url) => {
+        const error = captureError(() => route.parseUrl(url));
 
           expect(error).toBeInstanceOf(UrlParserError);
           expect(error.message).toBeEqual(
             `Unable to parse "${url}". The url does not match the template "${route.template()}"`,
           );
-        });
       });
     });
   });
