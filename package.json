@@ -21,7 +21,7 @@
   "source": "./src/main.ts",
   "main": "./dist/main.cjs",
   "module": "./dist/main.js",
-  "unpkg": "./dist/main.umd.js",
+  "unpkg": "./dist/main.umd.cjs",
   "types": "./dist/main.d.ts",
   "sideEffects": false,
   "exports": {
