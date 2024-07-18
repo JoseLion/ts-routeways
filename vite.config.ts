@@ -6,15 +6,21 @@ export default defineConfig({
     lib: {
       entry: "./src/main.ts",
       fileName: "main",
-      formats: ["cjs", "es", "umd"],
-      name: "Routeways",
+      formats: ["cjs", "es"],
     },
+    rollupOptions: {
+      output: { preserveModules: true },
+    },
+    sourcemap: true,
+    ssr: true,
   },
-  plugins: [dts({
-    compilerOptions: {
-      emitDeclarationOnly: true,
-      incremental: false,
-    },
-    include: "./src/**",
-  })],
+  plugins: [
+    dts({
+      compilerOptions: {
+        emitDeclarationOnly: true,
+        incremental: false,
+      },
+      include: "./src/**",
+    }),
+  ],
 });
